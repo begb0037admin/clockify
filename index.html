@@ -399,6 +399,18 @@ function render() {
       <div class="prompt-box">${escHtml(prompt)}</div>
       <button class="copy-btn" id="copyBtn" onclick="copyPrompt()">📋 Copy prompt</button>
     </div>
+
+    <div class="section" style="border: 1px solid #1e3a5f;">
+      <h2 style="color:#60a5fa;">⟳ End of Session — do this before you close</h2>
+      <p style="font-size:13px;color:#94a3b8;margin-bottom:14px;">After Chrome confirms 07:15 logged — paste this into Cowork (this seat). I'll update the docs. Then run the git command.</p>
+      <div class="prompt-box" id="eosBox">${escHtml(buildEOSPrompt())}</div>
+      <button class="copy-btn" id="eosBtn" onclick="copyEOS()" style="background:#1e3a5f;">📋 Copy end-of-session prompt</button>
+      <div style="margin-top:16px;">
+        <div style="font-size:12px;color:#64748b;margin-bottom:6px;">Then push to GitHub:</div>
+        <div class="prompt-box" style="max-height:80px;">${escHtml('git add docs/HANDOVER.md docs/STATUS.md docs/reference/CLOCKIFY_KB.md\ngit commit -m "Timesheet logged: ' + fmtDate(today) + '"\ngit push origin main')}</div>
+        <button class="copy-btn" id="gitBtn" onclick="copyGit()" style="background:#14532d;margin-top:10px;">📋 Copy git command</button>
+      </div>
+    </div>
   `;
 
   // Sync duration picker to selected event's default duration
@@ -458,6 +470,42 @@ function copyPrompt() {
 // ─── ESCAPE HELPERS ───────────────────────────────────────────────────────────
 function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function escAttr(s) { return String(s).replace(/"/g,'&quot;'); }
+
+// ─── END OF SESSION ───────────────────────────────────────────────────────────
+function buildEOSPrompt() {
+  const rows = buildPlan().filter(r => r.type !== 'gapfill');
+  const lines = rows.map(r => `- ${r.label}: ${r.project} / ${r.task || 'BAU'} / ${minsToHH(r.mins)}`).join('\n');
+  return `Clockify session complete for ${fmtDate(today)}.
+
+Entries logged today:
+${lines}
+- Gap fill: Focussed time: Email and Teams messages / BAU / ${minsToHH(buildPlan().find(r=>r.type==='gapfill').mins)}
+
+Please:
+1. Update docs/HANDOVER.md with today's TL;DR, state of play, next action, and watch-outs
+2. Update docs/STATUS.md — move today to Completed, set tomorrow as Up Next
+3. Update docs/reference/CLOCKIFY_KB.md — add today to Logged Days Reference, add any new confirmed mappings
+4. Show me the updated files so I can review before pushing`;
+}
+
+function copyEOS() {
+  navigator.clipboard.writeText(buildEOSPrompt()).then(() => {
+    const btn = document.getElementById('eosBtn');
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerHTML = '📋 Copy end-of-session prompt'; btn.classList.remove('copied'); }, 2500);
+  });
+}
+
+function copyGit() {
+  const cmd = `git add docs/HANDOVER.md docs/STATUS.md docs/reference/CLOCKIFY_KB.md\ngit commit -m "Timesheet logged: ${fmtDate(today)}"\ngit push origin main`;
+  navigator.clipboard.writeText(cmd).then(() => {
+    const btn = document.getElementById('gitBtn');
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerHTML = '📋 Copy git command'; btn.classList.remove('copied'); }, 2500);
+  });
+}
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 document.getElementById('dateDisplay').textContent = fmtDate(today);
