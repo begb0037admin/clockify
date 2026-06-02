@@ -1,7 +1,7 @@
 # CLOCKIFY_KB.md — Clockify Knowledge Base
 > Living reference. Read this before every Timesheet task.
 > Update this whenever a new mapping is confirmed.
-> Last updated: 2026-06-01
+> Last updated: 2026-06-02
 
 ---
 

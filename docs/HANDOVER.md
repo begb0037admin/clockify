@@ -1,22 +1,22 @@
-# HANDOVER — 2026-06-01
+# HANDOVER — 2026-06-02
 
 ## TL;DR
-First session establishing the Clockify project. Timesheet logging confirmed working for Mon 1 Jun and Tue 2 Jun. Project-OS folder created. CLOCKIFY_KB.md populated with all confirmed mappings. Tomorrow: continue daily logging from Wed 3 Jun onwards.
+Tooling session. No new Clockify entries logged (Tue 2 Jun was already logged in the previous session). Built the morning dashboard (index.html) — a live browser tool that reads the KB from GitHub, auto-builds today's plan by day of week, generates a copy-paste Chrome prompt, and includes an end-of-session panel for KB updates and git push. Dashboard is live at https://begb0037admin.github.io/clockify/
 
 ## State of Play
-- Mon 1 Jun: 7:15 logged and confirmed in Clockify
-- Tue 2 Jun: 7:15 logged and confirmed in Clockify
-- Wed 3 Jun onwards: not yet logged
-- CLOCKIFY_KB.md created and populated with all mappings confirmed today
-- Busy block decoder partially complete — Tue 2 Jun has 3 unknown Busy blocks
-- Weekly Standard template exists in Clockify — apply Mondays only
+- Mon 1 Jun: 7:15 logged ✅
+- Tue 2 Jun: 7:15 logged ✅
+- Wed 3 Jun: not yet logged — first live run of the morning dashboard
+- Dashboard live on GitHub Pages — KB-driven, updates automatically when KB is pushed
+- CLAUDE.md updated with Context Boundary section (work seat / out of scope)
+- README.md added to repo
+- OQ-01 (Tue 2 Jun Busy blocks) still unresolved
 
 ## Next Concrete Action
-Open Clockify Calendar view (Day view) for Wed 3 Jun. Cross-reference events against CLOCKIFY_KB.md. Build Timesheet entry. Ask Kevin about any unmapped Busy blocks before logging.
+Tomorrow morning: open https://begb0037admin.github.io/clockify/ — the dashboard will build Wednesday's plan automatically (FA catchup + HR Systems team meeting + Simon/Kevin 121). Review, copy Chrome prompt, log, then use end-of-session panel to update docs and push.
 
 ## Watch Out For
-- Do NOT attempt API writes — SSO blocker, permanently closed
-- Busy blocks on Tue 2 Jun are unresolved — flagged in OPEN_QUESTIONS OQ-01, ask Kevin to clarify
-- Always apply Weekly Standard template on Mondays only
-- Enter gap fill row last, after all meetings logged, to reach 7:15 total
-- Wednesday has HR Systems Management Team meeting and Simon/Kevin 121 — both are standard Wed events, both in KB
+- Wed plan should show 3 entries: FA catchup (0:15) + HR Systems team meeting (1:00) + Simon/Kevin 121 (1:00) = 2:15 meetings, gap fill 5:00
+- OQ-01 Busy blocks on Tue 2 Jun still unresolved — ask Kevin if they need to be back-logged
+- Task IDs for HR Systems Management Team meeting and HR Systems Management Team: one-to-ones are still TBC in KB — confirm from Clockify on first Wednesday run
+- Dashboard fetches raw GitHub files — repo must remain public for this to work
