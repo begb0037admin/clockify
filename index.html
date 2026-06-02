@@ -15,28 +15,29 @@
   }
   .container { max-width: 860px; margin: 0 auto; }
 
-  /* Header */
   .header { margin-bottom: 32px; }
   .header h1 { font-size: 22px; font-weight: 600; color: #f8fafc; }
   .header .date { font-size: 14px; color: #64748b; margin-top: 4px; }
-  .status-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .status-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
   .badge {
     font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 99px;
     text-transform: uppercase; letter-spacing: 0.05em;
   }
-  .badge-ok { background: #14532d; color: #4ade80; }
-  .badge-warn { background: #713f12; color: #fbbf24; }
+  .badge-ok  { background: #14532d; color: #4ade80; }
+  .badge-warn{ background: #713f12; color: #fbbf24; }
   .badge-err { background: #7f1d1d; color: #f87171; }
-  .badge-info { background: #1e3a5f; color: #60a5fa; }
+  .badge-info{ background: #1e3a5f; color: #60a5fa; }
+  .reload-btn {
+    font-size: 12px; color: #60a5fa; background: none; border: 1px solid #1e3a5f;
+    border-radius: 6px; padding: 3px 10px; cursor: pointer;
+  }
+  .reload-btn:hover { background: #1e3a5f; }
 
-  /* Sections */
   .section { background: #1e2130; border-radius: 10px; padding: 20px 24px; margin-bottom: 16px; }
   .section h2 { font-size: 13px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
 
-  /* Handover box */
   .handover-text { font-size: 13px; color: #cbd5e1; line-height: 1.6; white-space: pre-wrap; }
 
-  /* Plan table */
   table { width: 100%; border-collapse: collapse; font-size: 14px; }
   th { text-align: left; padding: 6px 10px; color: #64748b; font-weight: 500; font-size: 12px; border-bottom: 1px solid #2d3448; }
   td { padding: 9px 10px; border-bottom: 1px solid #1a1f2e; vertical-align: middle; }
@@ -44,34 +45,34 @@
   .row-gapfill td { color: #94a3b8; font-style: italic; }
   .row-total td { font-weight: 700; color: #f8fafc; border-top: 2px solid #2d3448; padding-top: 12px; }
   .dur { font-variant-numeric: tabular-nums; font-family: monospace; font-size: 13px; }
-  .dur-ok { color: #4ade80; }
+  .dur-ok   { color: #4ade80; }
   .dur-warn { color: #fbbf24; }
+  .dur-err  { color: #f87171; }
   .tag { font-size: 11px; background: #2d3448; color: #94a3b8; padding: 2px 7px; border-radius: 4px; }
+  small { color: #64748b; font-size: 12px; }
 
-  /* Add row */
-  .add-row { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; align-items: flex-end; }
-  .add-row input, .add-row select {
+  .add-row { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; align-items: flex-end; }
+  .add-row label { font-size: 12px; color: #64748b; display: block; margin-bottom: 4px; }
+  .add-row select, .add-row input {
     background: #0f1117; border: 1px solid #2d3448; border-radius: 6px;
     color: #e2e8f0; padding: 7px 10px; font-size: 13px;
   }
-  .add-row input { width: 220px; }
-  .add-row select { width: 80px; }
-  .add-row label { font-size: 12px; color: #64748b; display: block; margin-bottom: 4px; }
-  .btn {
-    padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer;
-    font-size: 13px; font-weight: 600; transition: opacity 0.15s;
-  }
-  .btn:hover { opacity: 0.85; }
+  .add-row select.event-pick { min-width: 280px; max-width: 380px; }
+  .add-row select.dur-pick { width: 80px; }
+  .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; }
   .btn-add { background: #1e3a5f; color: #60a5fa; }
-  .btn-remove { background: transparent; color: #f87171; font-size: 12px; padding: 4px 8px; border: 1px solid #3d1f1f; border-radius: 4px; }
+  .btn-add:hover { background: #1d4ed8; color: #fff; }
+  .btn-remove { background: transparent; color: #f87171; font-size: 12px; padding: 4px 8px; border: 1px solid #3d1f1f; border-radius: 4px; cursor: pointer; }
 
-  /* Monday notice */
   .monday-notice {
     background: #1a2e1a; border: 1px solid #14532d; border-radius: 8px;
     padding: 10px 14px; font-size: 13px; color: #4ade80; margin-bottom: 14px;
   }
+  .flag {
+    background: #1c1a00; border: 1px solid #713f12; border-radius: 7px;
+    padding: 10px 14px; margin-top: 12px; font-size: 13px; color: #fde68a;
+  }
 
-  /* Prompt box */
   .prompt-box {
     background: #0f1117; border: 1px solid #2d3448; border-radius: 8px;
     padding: 16px; font-size: 13px; font-family: monospace; color: #cbd5e1;
@@ -80,226 +81,278 @@
   .copy-btn {
     background: #1d4ed8; color: #fff; margin-top: 12px; padding: 10px 20px;
     border-radius: 7px; font-size: 14px; font-weight: 600; border: none; cursor: pointer;
-    display: inline-flex; align-items: center; gap: 8px; transition: background 0.15s;
+    display: inline-flex; align-items: center; gap: 8px;
   }
   .copy-btn:hover { background: #2563eb; }
   .copy-btn.copied { background: #15803d; }
 
-  /* Flags */
-  .flag { background: #1c1a00; border: 1px solid #713f12; border-radius: 7px; padding: 10px 14px; margin-bottom: 8px; font-size: 13px; color: #fde68a; }
-
-  /* Weekend */
   .weekend-msg { text-align: center; padding: 60px 20px; }
   .weekend-msg .emoji { font-size: 48px; margin-bottom: 16px; }
   .weekend-msg h2 { font-size: 20px; color: #f8fafc; }
   .weekend-msg p { color: #64748b; margin-top: 8px; }
 
-  input:focus, select:focus { outline: 2px solid #1d4ed8; outline-offset: 1px; }
+  .spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid #2d3448; border-top-color: #60a5fa; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  select:focus, input:focus { outline: 2px solid #1d4ed8; outline-offset: 1px; }
 </style>
 </head>
 <body>
 <div class="container">
-
   <div class="header">
     <h1>☕ Clockify Morning Brief</h1>
-    <div class="date" id="dateDisplay">Loading…</div>
-    <div class="status-row" id="statusRow"></div>
+    <div class="date" id="dateDisplay"></div>
+    <div class="status-row" id="statusRow">
+      <span class="badge badge-info"><span class="spinner"></span>Loading KB…</span>
+    </div>
   </div>
-
   <div id="mainContent"></div>
-
 </div>
 
 <script>
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
-const GITHUB_BASE = 'https://raw.githubusercontent.com/begb0037admin/clockify/main';
-const FILES = {
-  claude:   GITHUB_BASE + '/CLAUDE.md',
-  status:   GITHUB_BASE + '/docs/STATUS.md',
-  handover: GITHUB_BASE + '/docs/HANDOVER.md',
-  kb:       GITHUB_BASE + '/docs/reference/CLOCKIFY_KB.md',
+const BASE = 'https://raw.githubusercontent.com/begb0037admin/clockify/main';
+const URLS = {
+  claude:   BASE + '/CLAUDE.md',
+  status:   BASE + '/docs/STATUS.md',
+  handover: BASE + '/docs/HANDOVER.md',
+  kb:       BASE + '/docs/reference/CLOCKIFY_KB.md',
 };
-
-// Working day total in minutes
-const DAY_TOTAL = 7 * 60 + 15; // 435
-
-// ─── RECURRING RULES ──────────────────────────────────────────────────────────
-// dow: 0=Sun,1=Mon,2=Tue,3=Wed,4=Thu,5=Fri
-const RECURRING = [
-  { dow: [1,2,3,4,5], label: 'FA Team Daily Catchup',             project: 'Meetings - HR Systems team',              task: 'Functional Analysts: regular catch-up',    mins: 15 },
-  { dow: [1],         label: 'H&S Roadmap',                        project: 'Meetings - HR Systems team',              task: 'Weekly H&S Roadmap update meeting',         mins: 60 },
-  { dow: [3],         label: 'HR Systems team meeting',            project: 'Meetings - HR Systems team',              task: 'HR Systems Management Team meeting',        mins: 60 },
-  { dow: [3],         label: 'Simon / Kevin 121s',                 project: 'Meetings - HR Systems team',              task: 'HR Systems Management Team: one-to-ones',  mins: 60 },
-];
+const DAY_TOTAL = 7 * 60 + 15; // 435 mins
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
-let today = new Date();
-let dow = today.getDay();
-let adHoc = []; // { label, project, task, mins }
-let handoverText = '';
-let filesLoaded = { claude: false, status: false, handover: false, kb: false };
-let fileErrors = [];
+let today      = new Date();
+let kbEvents   = [];   // parsed from KB Calendar Event Mapping table
+let adHoc      = [];   // { _id, label, project, task, mins }
+let handover   = '';
+let loadedOk   = false;
+let loadErrors = [];
+let adhocId    = 0;
 
-// ─── UTILS ────────────────────────────────────────────────────────────────────
-function minsToHHMM(m) {
-  const h = Math.floor(m / 60);
-  const min = m % 60;
-  return String(h).padStart(2,'0') + ':' + String(min).padStart(2,'0');
-}
-
+// ─── DATE UTILS ───────────────────────────────────────────────────────────────
+const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 function fmtDate(d) {
-  return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  return d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
 }
-
-function dayName(d) {
-  return ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d.getDay()];
+function minsToHH(m) {
+  if (m < 0) m = 0;
+  return String(Math.floor(m/60)).padStart(2,'0') + ':' + String(m%60).padStart(2,'0');
 }
+function isWeekend(d) { return d.getDay()===0 || d.getDay()===6; }
 
-function isWeekend(d) { return d.getDay() === 0 || d.getDay() === 6; }
-
-// ─── FETCH BOOTSTRAP FILES ────────────────────────────────────────────────────
-async function fetchFile(key, url) {
-  try {
-    const r = await fetch(url, { cache: 'no-cache' });
-    if (!r.ok) throw new Error(r.status);
-    filesLoaded[key] = true;
-    return await r.text();
-  } catch(e) {
-    fileErrors.push(key);
-    return null;
-  }
-}
-
-function extractHandover(text) {
-  if (!text) return 'Could not load handover.';
-  // Return TL;DR + State of Play + Next Concrete Action
+// ─── KB PARSER ────────────────────────────────────────────────────────────────
+function parseTable(text, headerPattern) {
+  // Find section by header regex, then grab the markdown table that follows
   const lines = text.split('\n');
-  let out = [];
-  let capture = false;
-  for (const line of lines) {
-    if (/^## TL;DR/i.test(line) || /^## State of Play/i.test(line) || /^## Next Concrete Action/i.test(line)) {
-      capture = true;
-    } else if (/^## Watch Out For/i.test(line)) {
-      capture = false;
-    }
-    if (capture) out.push(line);
-  }
-  return out.join('\n').trim() || text.slice(0, 600);
-}
-
-// ─── BUILD PLAN ───────────────────────────────────────────────────────────────
-function buildPlan() {
-  const d = today.getDay();
-  const rows = [];
-  for (const rule of RECURRING) {
-    if (rule.dow.includes(d)) {
-      rows.push({ label: rule.label, project: rule.project, task: rule.task, mins: rule.mins, type: 'recurring' });
+  let inSection = false, inTable = false, headers = [], rows = [];
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i];
+    if (headerPattern.test(l)) { inSection = true; continue; }
+    if (inSection && /^##/.test(l) && !headerPattern.test(l)) break; // next section
+    if (!inSection) continue;
+    if (/^\|/.test(l)) {
+      const cells = l.split('|').map(c => c.trim()).filter((_,i,a) => i>0 && i<a.length-1);
+      if (!headers.length) { headers = cells; continue; }
+      if (/^[-| ]+$/.test(l)) continue; // separator row
+      const obj = {};
+      headers.forEach((h,i) => obj[h] = cells[i] || '');
+      rows.push(obj);
     }
   }
-  for (const a of adHoc) {
-    rows.push({ ...a, type: 'adhoc' });
-  }
-  const meetingMins = rows.reduce((s, r) => s + r.mins, 0);
-  const gapMins = DAY_TOTAL - meetingMins;
-  rows.push({ label: 'Gap fill', project: 'Focussed time: Email and Teams messages', task: 'BAU', mins: gapMins, type: 'gapfill' });
   return rows;
 }
 
-// ─── GENERATE CHROME PROMPT ───────────────────────────────────────────────────
-function buildPrompt(rows) {
-  const dateStr = fmtDate(today);
-  const isMonday = today.getDay() === 1;
-  const total = rows.reduce((s,r) => s + r.mins, 0);
-  const planLines = rows.map(r => `| ${r.project} | ${r.task} | ${minsToHHMM(r.mins)} |`).join('\n');
+function parseDurMins(s) {
+  // "0:15", "1:00", "0:30 or 1:00" → take first match
+  const m = s.match(/(\d+):(\d+)/);
+  return m ? parseInt(m[1])*60 + parseInt(m[2]) : null;
+}
 
-  return `We are logging the Clockify timesheet for ${dateStr}. The plan has been confirmed:
+function notesToDow(notes) {
+  const n = notes.toLowerCase();
+  if (/every weekday|mon.{0,5}fri|daily/.test(n)) return [1,2,3,4,5];
+  if (/monday/.test(n))    return [1];
+  if (/tuesday/.test(n))   return [2];
+  if (/wednesday/.test(n)) return [3];
+  if (/thursday/.test(n))  return [4];
+  if (/friday/.test(n))    return [5];
+  return null; // not auto-recurring
+}
+
+function parseKB(text) {
+  const rows = parseTable(text, /## Calendar Event to Project\/Task Mapping/);
+  return rows
+    .filter(r => r['Calendar event'] && r['Project'] && r['Project'] !== '—')
+    .map(r => ({
+      label:    r['Calendar event'],
+      project:  r['Project'],
+      task:     r['Task'] === '—' ? '' : r['Task'],
+      mins:     parseDurMins(r['Duration']),
+      notes:    r['Notes'] || '',
+      dow:      notesToDow(r['Notes'] || ''),
+      variable: /or|as per/i.test(r['Duration']),
+    }));
+}
+
+function extractHandover(text) {
+  if (!text) return 'Could not load.';
+  const lines = text.split('\n');
+  let out = [], capture = false;
+  for (const l of lines) {
+    if (/^## (TL;DR|State of Play|Next Concrete Action)/i.test(l)) capture = true;
+    else if (/^## Watch Out For/i.test(l)) capture = false;
+    if (capture) out.push(l);
+  }
+  return out.join('\n').trim() || text.slice(0,600);
+}
+
+// ─── FETCH ────────────────────────────────────────────────────────────────────
+async function fetchFile(url) {
+  const r = await fetch(url, { cache:'no-cache' });
+  if (!r.ok) throw new Error(r.status);
+  return r.text();
+}
+
+async function bootstrap() {
+  loadErrors = [];
+  try {
+    const [, , handoverRaw, kbRaw] = await Promise.all([
+      fetchFile(URLS.claude).catch(()=>{ loadErrors.push('CLAUDE.md'); return ''; }),
+      fetchFile(URLS.status).catch(()=>{ loadErrors.push('STATUS.md'); return ''; }),
+      fetchFile(URLS.handover).catch(()=>{ loadErrors.push('HANDOVER.md'); return ''; }),
+      fetchFile(URLS.kb).catch(()=>{ loadErrors.push('CLOCKIFY_KB.md'); return ''; }),
+    ]);
+    handover = extractHandover(handoverRaw);
+    kbEvents = parseKB(kbRaw);
+    loadedOk = loadErrors.length === 0;
+  } catch(e) {
+    loadedOk = false;
+  }
+  render();
+}
+
+// ─── PLAN BUILDER ─────────────────────────────────────────────────────────────
+function buildPlan() {
+  const dow = today.getDay();
+  const rows = [];
+
+  // Auto-apply recurring events from KB
+  for (const ev of kbEvents) {
+    if (ev.dow && ev.dow.includes(dow) && ev.mins !== null && !ev.variable) {
+      rows.push({ label: ev.label, project: ev.project, task: ev.task, mins: ev.mins, type: 'recurring' });
+    }
+  }
+
+  // Ad-hoc additions
+  for (const a of adHoc) rows.push({ ...a, type: 'adhoc' });
+
+  // Gap fill
+  const meetingMins = rows.reduce((s,r) => s+r.mins, 0);
+  rows.push({
+    label: 'Gap fill', project: 'Focussed time: Email and Teams messages', task: 'BAU',
+    mins: DAY_TOTAL - meetingMins, type: 'gapfill'
+  });
+  return rows;
+}
+
+// ─── PROMPT BUILDER ───────────────────────────────────────────────────────────
+function buildPrompt(rows) {
+  const isMonday = today.getDay() === 1;
+  const total = rows.reduce((s,r) => s+r.mins, 0);
+  const planLines = rows.map(r => `| ${r.project} | ${r.task || 'BAU'} | ${minsToHH(r.mins)} |`).join('\n');
+  return `We are logging the Clockify timesheet for ${fmtDate(today)}. The plan has been confirmed:
 
 | Project | Task | Duration |
 |---------|------|----------|
 ${planLines}
-| **TOTAL** | | **${minsToHHMM(total)}** |
+| **TOTAL** | | **${minsToHH(total)}** |
 
 Please:
 1. Navigate to https://app.clockify.me/timesheet
 2. Confirm the correct week is showing${isMonday ? '\n3. Click Apply on the Weekly Standard template before adding any rows' : ''}
-3. For each row above, find the existing row or add a new one
+3. For each row above, find or add the row
 4. Task selection: click the arrow next to "N Tasks" to expand inline — do NOT click the task count badge
-5. Enter the duration in today's (${dayName(today)}) column
+5. Enter the duration in today's (${DAYS[today.getDay()]}) column
 6. Enter gap fill (Focussed time: BAU) last
-7. Confirm daily total shown in Clockify = ${minsToHHMM(DAY_TOTAL)}
+7. Confirm daily total shown in Clockify = ${minsToHH(DAY_TOTAL)}
 8. Report back when done
 
-Hard rules: never log more or less than ${minsToHHMM(DAY_TOTAL)}. Never attempt API writes.
+Hard rules: never log more or less than ${minsToHH(DAY_TOTAL)}. Never attempt API writes.
 
-After logging, update HANDOVER.md, STATUS.md, CLOCKIFY_KB.md and push to GitHub main.`;
+After logging: update HANDOVER.md, STATUS.md, CLOCKIFY_KB.md and push to GitHub main.`;
 }
 
 // ─── RENDER ───────────────────────────────────────────────────────────────────
 function render() {
-  const main = document.getElementById('mainContent');
+  document.getElementById('dateDisplay').textContent = fmtDate(today);
   const statusRow = document.getElementById('statusRow');
+  const main      = document.getElementById('mainContent');
 
   // Status badges
   statusRow.innerHTML = '';
-  const allLoaded = Object.values(filesLoaded).every(Boolean);
-  const badge = (text, cls) => `<span class="badge ${cls}">${text}</span>`;
-
-  if (allLoaded) {
-    statusRow.innerHTML += badge('GitHub ✓', 'badge-ok');
-  } else if (fileErrors.length > 0) {
-    statusRow.innerHTML += badge('GitHub partial', 'badge-warn');
+  if (loadedOk) {
+    statusRow.innerHTML += `<span class="badge badge-ok">KB live ✓</span>`;
+  } else if (kbEvents.length) {
+    statusRow.innerHTML += `<span class="badge badge-warn">KB partial</span>`;
   } else {
-    statusRow.innerHTML += badge('Loading…', 'badge-info');
+    statusRow.innerHTML += `<span class="badge badge-err">KB failed</span>`;
   }
-
-  if (today.getDay() === 1) statusRow.innerHTML += badge('Monday — apply template', 'badge-warn');
+  if (loadErrors.length) {
+    statusRow.innerHTML += `<span class="badge badge-warn">Missing: ${loadErrors.join(', ')}</span>`;
+  }
+  if (today.getDay() === 1) {
+    statusRow.innerHTML += `<span class="badge badge-warn">Monday — apply template</span>`;
+  }
+  statusRow.innerHTML += `<button class="reload-btn" onclick="location.reload()">↺ Reload</button>`;
 
   if (isWeekend(today)) {
-    main.innerHTML = `
-      <div class="weekend-msg">
-        <div class="emoji">🛋️</div>
-        <h2>No timesheet today.</h2>
-        <p>${fmtDate(today)} — enjoy the weekend.</p>
-      </div>`;
+    main.innerHTML = `<div class="weekend-msg"><div class="emoji">🛋️</div><h2>No timesheet today.</h2><p>${fmtDate(today)}</p></div>`;
     return;
   }
 
-  const rows = buildPlan();
-  const totalMins = rows.reduce((s,r) => s + r.mins, 0);
+  const rows   = buildPlan();
+  const total  = rows.reduce((s,r) => s+r.mins, 0);
   const gapRow = rows.find(r => r.type === 'gapfill');
-  const gapOk = gapRow && gapRow.mins >= 0 && totalMins === DAY_TOTAL;
+  const gapOk  = gapRow && gapRow.mins >= 0 && total === DAY_TOTAL;
+  const totalCls = total === DAY_TOTAL ? 'dur-ok' : total > DAY_TOTAL ? 'dur-err' : 'dur-warn';
 
-  // Plan table rows HTML
+  // Table rows
   const tableRows = rows.map(r => {
     const cls = r.type === 'gapfill' ? 'row-gapfill' : '';
-    const removeBtn = r.type === 'adhoc'
+    const rm  = r.type === 'adhoc'
       ? `<button class="btn-remove" onclick="removeAdHoc('${r._id}')">✕</button>` : '';
     return `<tr class="${cls}">
-      <td>${r.project}<br><small style="color:#64748b">${r.task}</small></td>
-      <td><span class="tag">${r.label || r.task}</span></td>
-      <td><span class="dur">${minsToHHMM(r.mins)}</span></td>
-      <td>${removeBtn}</td>
+      <td>${escHtml(r.project)}<br><small>${escHtml(r.task || '')}</small></td>
+      <td><span class="tag">${escHtml(r.label)}</span></td>
+      <td><span class="dur">${minsToHH(r.mins)}</span></td>
+      <td>${rm}</td>
     </tr>`;
   }).join('');
 
-  const totalClass = totalMins === DAY_TOTAL ? 'dur-ok' : 'dur-warn';
+  // Ad-hoc event picker — KB events not already in today's recurring plan, and not gap fill / keep free / busy
+  const recurringLabels = new Set(rows.filter(r=>r.type==='recurring').map(r=>r.label));
+  const SKIP = /keep free|busy \(unknown\)|gap fill/i;
+  const pickable = kbEvents.filter(ev =>
+    !recurringLabels.has(ev.label) && !SKIP.test(ev.label) && ev.mins !== null
+  );
+  const pickerOptions = pickable.map(ev =>
+    `<option value="${escAttr(ev.label)}" data-mins="${ev.mins}" data-project="${escAttr(ev.project)}" data-task="${escAttr(ev.task||'')}">${escHtml(ev.label)} (${minsToHH(ev.mins)})</option>`
+  ).join('');
+  const hasPickable = pickable.length > 0;
 
-  const mondayNotice = today.getDay() === 1
-    ? `<div class="monday-notice">⚠️ Monday — click <strong>Apply</strong> on the Weekly Standard template in Clockify before adding any rows.</div>`
-    : '';
+  const mondayNotice = today.getDay()===1
+    ? `<div class="monday-notice">⚠️ Monday — click <strong>Apply</strong> on the Weekly Standard template in Clockify before adding rows.</div>` : '';
 
   const prompt = buildPrompt(rows);
 
   main.innerHTML = `
-    <!-- Handover -->
     <div class="section">
       <h2>Last Handover</h2>
-      <div class="handover-text" id="handoverContent">${handoverText || 'Loading…'}</div>
+      <div class="handover-text">${escHtml(handover || 'Loading…')}</div>
     </div>
 
-    <!-- Plan -->
     <div class="section">
-      <h2>Today's Timesheet Plan — ${fmtDate(today)}</h2>
+      <h2>Today's Plan — ${DAYS[today.getDay()]}</h2>
       ${mondayNotice}
       <table>
         <thead><tr><th>Project / Task</th><th>Event</th><th>Duration</th><th></th></tr></thead>
@@ -307,21 +360,24 @@ function render() {
         <tfoot>
           <tr class="row-total">
             <td colspan="2">Total</td>
-            <td><span class="dur ${totalClass}">${minsToHHMM(totalMins)}</span></td>
+            <td><span class="dur ${totalCls}">${minsToHH(total)}</span></td>
             <td></td>
           </tr>
         </tfoot>
       </table>
 
-      <!-- Add ad-hoc row -->
       <div class="add-row">
+        ${hasPickable ? `
         <div>
-          <label>Event / meeting name</label>
-          <input type="text" id="adhocLabel" placeholder="e.g. DTP1092 College staff in PXD">
-        </div>
+          <label>Add a meeting from KB</label>
+          <select class="event-pick" id="eventPick">
+            <option value="">— select event —</option>
+            ${pickerOptions}
+          </select>
+        </div>` : ''}
         <div>
-          <label>Duration</label>
-          <select id="adhocDur">
+          <label>Duration override</label>
+          <select class="dur-pick" id="durPick">
             <option value="15">0:15</option>
             <option value="30" selected>0:30</option>
             <option value="45">0:45</option>
@@ -332,57 +388,55 @@ function render() {
         </div>
         <div>
           <label>&nbsp;</label>
-          <button class="btn btn-add" onclick="addAdHoc()">+ Add meeting</button>
+          <button class="btn btn-add" onclick="addAdHoc()">+ Add</button>
         </div>
       </div>
-      ${!gapOk ? `<div class="flag" style="margin-top:12px">⚠️ Total does not equal 07:15 — check your entries before copying the prompt.</div>` : ''}
+      ${!gapOk ? `<div class="flag">⚠️ Total is ${minsToHH(total)} — must be 07:15 before copying the prompt.</div>` : ''}
     </div>
 
-    <!-- Chrome Prompt -->
     <div class="section">
       <h2>Claude in Chrome Prompt — copy &amp; paste</h2>
-      <div class="prompt-box" id="promptBox">${escHtml(prompt)}</div>
-      <button class="copy-btn" id="copyBtn" onclick="copyPrompt()">
-        <span>📋</span> Copy prompt
-      </button>
+      <div class="prompt-box">${escHtml(prompt)}</div>
+      <button class="copy-btn" id="copyBtn" onclick="copyPrompt()">📋 Copy prompt</button>
     </div>
   `;
-}
 
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // Sync duration picker to selected event's default duration
+  const ep = document.getElementById('eventPick');
+  if (ep) {
+    ep.addEventListener('change', () => {
+      const opt = ep.options[ep.selectedIndex];
+      const m = parseInt(opt.dataset.mins || 30);
+      const dp = document.getElementById('durPick');
+      // Find closest option
+      let best = null;
+      for (const o of dp.options) {
+        if (parseInt(o.value) === m) { best = o; break; }
+        if (!best || Math.abs(parseInt(o.value)-m) < Math.abs(parseInt(best.value)-m)) best = o;
+      }
+      if (best) dp.value = best.value;
+    });
+  }
 }
 
 // ─── AD HOC ───────────────────────────────────────────────────────────────────
-let adhocIdCounter = 0;
-
-// KB-based mapping hints (expand as KB grows)
-const KB_MAP = {
-  'dtp1092':          { project: 'Research management data for REF and research quality [DTP1092]', task: 'Meetings and calls' },
-  'college staff':    { project: 'Research management data for REF and research quality [DTP1092]', task: 'Meetings and calls' },
-  'azure':            { project: 'Data Platform Project', task: 'Meetings and calls' },
-  'sprint review':    { project: 'Data Platform Project', task: 'Meetings and calls' },
-  'eploy':            { project: 'TSS ePloy integration [119]', task: '—' },
-  'hold':             { project: 'TSS ePloy integration [119]', task: '—' },
-  'data platform':    { project: 'Data Platform Project', task: 'Meetings and calls' },
-};
-
-function lookupMapping(label) {
-  const l = label.toLowerCase();
-  for (const [key, val] of Object.entries(KB_MAP)) {
-    if (l.includes(key)) return val;
-  }
-  return { project: 'Focussed time: Email and Teams messages', task: 'BAU' };
-}
-
 function addAdHoc() {
-  const label = document.getElementById('adhocLabel').value.trim();
-  const mins = parseInt(document.getElementById('adhocDur').value, 10);
-  if (!label) { document.getElementById('adhocLabel').focus(); return; }
-  const id = 'ah' + (adhocIdCounter++);
-  const mapping = lookupMapping(label);
-  adHoc.push({ _id: id, label, project: mapping.project, task: mapping.task, mins });
-  document.getElementById('adhocLabel').value = '';
+  const ep = document.getElementById('eventPick');
+  const dp = document.getElementById('durPick');
+  const mins = parseInt(dp.value);
+
+  let label, project, task;
+  if (ep && ep.value) {
+    const opt = ep.options[ep.selectedIndex];
+    label   = opt.value;
+    project = opt.dataset.project || '';
+    task    = opt.dataset.task    || '';
+  } else {
+    return; // nothing selected
+  }
+
+  const id = 'ah' + (adhocId++);
+  adHoc.push({ _id: id, label, project, task, mins });
   render();
 }
 
@@ -392,32 +446,22 @@ function removeAdHoc(id) {
 }
 
 function copyPrompt() {
-  const rows = buildPlan();
-  const text = buildPrompt(rows);
+  const text = buildPrompt(buildPlan());
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.getElementById('copyBtn');
     btn.textContent = '✓ Copied!';
     btn.classList.add('copied');
-    setTimeout(() => {
-      btn.innerHTML = '<span>📋</span> Copy prompt';
-      btn.classList.remove('copied');
-    }, 2500);
+    setTimeout(() => { btn.innerHTML = '📋 Copy prompt'; btn.classList.remove('copied'); }, 2500);
   });
 }
 
+// ─── ESCAPE HELPERS ───────────────────────────────────────────────────────────
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escAttr(s) { return String(s).replace(/"/g,'&quot;'); }
+
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 document.getElementById('dateDisplay').textContent = fmtDate(today);
-render(); // initial render before fetch
-
-(async () => {
-  const [, , handoverRaw] = await Promise.all([
-    fetchFile('claude',   FILES.claude),
-    fetchFile('status',   FILES.status),
-    fetchFile('handover', FILES.handover).then(t => { handoverText = extractHandover(t); return t; }),
-    fetchFile('kb',       FILES.kb),
-  ]);
-  render();
-})();
+bootstrap();
 </script>
 </body>
 </html>
