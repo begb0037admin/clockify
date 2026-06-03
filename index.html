@@ -95,6 +95,12 @@
   @keyframes spin { to { transform: rotate(360deg); } }
 
   select:focus, input:focus { outline: 2px solid #1d4ed8; outline-offset: 1px; }
+
+  .commit-bar { display: flex; align-items: center; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+  .btn-commit { background: #14532d; color: #4ade80; padding: 10px 20px; border-radius: 7px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; }
+  .btn-commit:hover { background: #166534; }
+  .btn-commit:disabled { opacity: 0.5; cursor: not-allowed; }
+  .commit-status { font-size: 13px; color: #94a3b8; }
 </style>
 </head>
 <body>
@@ -121,13 +127,15 @@ const URLS = {
 const DAY_TOTAL = 7 * 60 + 15; // 435 mins
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
-let today      = new Date();
-let kbEvents   = [];   // parsed from KB Calendar Event Mapping table
-let adHoc      = [];   // { _id, label, project, task, mins }
-let handover   = '';
-let loadedOk   = false;
-let loadErrors = [];
-let adhocId    = 0;
+let today        = new Date();
+let kbEvents     = [];   // parsed from KB Calendar Event Mapping table
+let adHoc        = [];   // { _id, label, project, task, mins }
+let dismissed    = new Set(); // labels of recurring rows dismissed this session
+let handover     = '';
+let kbRawContent = '';   // raw KB markdown, used by Approve & Commit
+let loadedOk     = false;
+let loadErrors   = [];
+let adhocId      = 0;
 
 // ─── DATE UTILS ───────────────────────────────────────────────────────────────
 const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -142,18 +150,17 @@ function isWeekend(d) { return d.getDay()===0 || d.getDay()===6; }
 
 // ─── KB PARSER ────────────────────────────────────────────────────────────────
 function parseTable(text, headerPattern) {
-  // Find section by header regex, then grab the markdown table that follows
   const lines = text.split('\n');
   let inSection = false, inTable = false, headers = [], rows = [];
   for (let i = 0; i < lines.length; i++) {
     const l = lines[i];
     if (headerPattern.test(l)) { inSection = true; continue; }
-    if (inSection && /^##/.test(l) && !headerPattern.test(l)) break; // next section
+    if (inSection && /^##/.test(l) && !headerPattern.test(l)) break;
     if (!inSection) continue;
     if (/^\|/.test(l)) {
       const cells = l.split('|').map(c => c.trim()).filter((_,i,a) => i>0 && i<a.length-1);
       if (!headers.length) { headers = cells; continue; }
-      if (/^[-| ]+$/.test(l)) continue; // separator row
+      if (/^[-| ]+$/.test(l)) continue;
       const obj = {};
       headers.forEach((h,i) => obj[h] = cells[i] || '');
       rows.push(obj);
@@ -163,7 +170,6 @@ function parseTable(text, headerPattern) {
 }
 
 function parseDurMins(s) {
-  // "0:15", "1:00", "0:30 or 1:00" → take first match
   const m = s.match(/(\d+):(\d+)/);
   return m ? parseInt(m[1])*60 + parseInt(m[2]) : null;
 }
@@ -176,7 +182,7 @@ function notesToDow(notes) {
   if (/wednesday/.test(n)) return [3];
   if (/thursday/.test(n))  return [4];
   if (/friday/.test(n))    return [5];
-  return null; // not auto-recurring
+  return null;
 }
 
 function parseKB(text) {
@@ -222,9 +228,10 @@ async function bootstrap() {
       fetchFile(URLS.handover).catch(()=>{ loadErrors.push('HANDOVER.md'); return ''; }),
       fetchFile(URLS.kb).catch(()=>{ loadErrors.push('CLOCKIFY_KB.md'); return ''; }),
     ]);
-    handover = extractHandover(handoverRaw);
-    kbEvents = parseKB(kbRaw);
-    loadedOk = loadErrors.length === 0;
+    handover     = extractHandover(handoverRaw);
+    kbRawContent = kbRaw;
+    kbEvents     = parseKB(kbRaw);
+    loadedOk     = loadErrors.length === 0;
   } catch(e) {
     loadedOk = false;
   }
@@ -236,17 +243,14 @@ function buildPlan() {
   const dow = today.getDay();
   const rows = [];
 
-  // Auto-apply recurring events from KB
   for (const ev of kbEvents) {
-    if (ev.dow && ev.dow.includes(dow) && ev.mins !== null && !ev.variable) {
+    if (ev.dow && ev.dow.includes(dow) && ev.mins !== null && !ev.variable && !dismissed.has(ev.label)) {
       rows.push({ label: ev.label, project: ev.project, task: ev.task, mins: ev.mins, type: 'recurring' });
     }
   }
 
-  // Ad-hoc additions
   for (const a of adHoc) rows.push({ ...a, type: 'adhoc' });
 
-  // Gap fill
   const meetingMins = rows.reduce((s,r) => s+r.mins, 0);
   rows.push({
     label: 'Gap fill', project: 'Focussed time: Email and Teams messages', task: 'BAU',
@@ -258,28 +262,35 @@ function buildPlan() {
 // ─── PROMPT BUILDER ───────────────────────────────────────────────────────────
 function buildPrompt(rows) {
   const isMonday = today.getDay() === 1;
-  const total = rows.reduce((s,r) => s+r.mins, 0);
-  const planLines = rows.map(r => `| ${r.project} | ${r.task || 'BAU'} | ${minsToHH(r.mins)} |`).join('\n');
-  return `We are logging the Clockify timesheet for ${fmtDate(today)}. The plan has been confirmed:
+  const gapRow   = rows.find(r => r.type === 'gapfill');
+  const nonGap   = rows.filter(r => r.type !== 'gapfill');
+  const total    = rows.reduce((s,r) => s+r.mins, 0);
 
-| Project | Task | Duration |
-|---------|------|----------|
-${planLines}
-| **TOTAL** | | **${minsToHH(total)}** |
+  let n = 1;
+  let lines = '';
+  if (isMonday) {
+    lines += `${n++}. Apply the Weekly Standard template in Clockify before adding any rows.\n`;
+  }
+  for (const r of nonGap) {
+    lines += `${n++}. Project: ${r.project} | Task: ${r.task || 'BAU'} | Duration: ${minsToHH(r.mins)}\n`;
+  }
+  if (gapRow) {
+    lines += `${n++}. Project: ${gapRow.project} | Task: ${gapRow.task || 'BAU'} | Duration: ${minsToHH(gapRow.mins)} [GAP FILL — enter last]\n`;
+  }
 
-Please:
-1. Navigate to https://app.clockify.me/timesheet
-2. Confirm the correct week is showing${isMonday ? '\n3. Click Apply on the Weekly Standard template before adding any rows' : ''}
-3. For each row above, find or add the row
-4. Task selection: click the arrow next to "N Tasks" to expand inline — do NOT click the task count badge
-5. Enter the duration in today's (${DAYS[today.getDay()]}) column
-6. Enter gap fill (Focussed time: BAU) last
-7. Confirm daily total shown in Clockify = ${minsToHH(DAY_TOTAL)}
-8. Report back when done
+  return `Clockify timesheet instructions — ${fmtDate(today)}
 
-Hard rules: never log more or less than ${minsToHH(DAY_TOTAL)}. Never attempt API writes.
+Navigate to: https://app.clockify.me/timesheet
+Confirm the correct week is showing.
 
-After logging: update HANDOVER.md, STATUS.md, CLOCKIFY_KB.md and push to GitHub main.`;
+Log entries in this exact order:
+
+${lines.trim()}
+
+Task selection rule: click the arrow next to "N Tasks" to expand inline. Do NOT click the task count badge.
+
+Confirm daily total in Clockify = ${minsToHH(DAY_TOTAL)} before finishing.
+Report back when done.`;
 }
 
 // ─── RENDER ───────────────────────────────────────────────────────────────────
@@ -288,7 +299,6 @@ function render() {
   const statusRow = document.getElementById('statusRow');
   const main      = document.getElementById('mainContent');
 
-  // Status badges
   statusRow.innerHTML = '';
   if (loadedOk) {
     statusRow.innerHTML += `<span class="badge badge-ok">KB live ✓</span>`;
@@ -316,11 +326,14 @@ function render() {
   const gapOk  = gapRow && gapRow.mins >= 0 && total === DAY_TOTAL;
   const totalCls = total === DAY_TOTAL ? 'dur-ok' : total > DAY_TOTAL ? 'dur-err' : 'dur-warn';
 
-  // Table rows
   const tableRows = rows.map(r => {
     const cls = r.type === 'gapfill' ? 'row-gapfill' : '';
-    const rm  = r.type === 'adhoc'
-      ? `<button class="btn-remove" onclick="removeAdHoc('${r._id}')">✕</button>` : '';
+    let rm = '';
+    if (r.type === 'adhoc') {
+      rm = `<button class="btn-remove" onclick="removeAdHoc('${r._id}')">✕</button>`;
+    } else if (r.type === 'recurring') {
+      rm = `<button class="btn-remove" onclick="dismissRecurring('${escAttr(r.label)}')">✕</button>`;
+    }
     return `<tr class="${cls}">
       <td>${escHtml(r.project)}<br><small>${escHtml(r.task || '')}</small></td>
       <td><span class="tag">${escHtml(r.label)}</span></td>
@@ -329,7 +342,6 @@ function render() {
     </tr>`;
   }).join('');
 
-  // Ad-hoc event picker — KB events not already in today's recurring plan, and not gap fill / keep free / busy
   const recurringLabels = new Set(rows.filter(r=>r.type==='recurring').map(r=>r.label));
   const SKIP = /keep free|busy \(unknown\)|gap fill/i;
   const pickable = kbEvents.filter(ev =>
@@ -391,7 +403,12 @@ function render() {
           <button class="btn btn-add" onclick="addAdHoc()">+ Add</button>
         </div>
       </div>
-      ${!gapOk ? `<div class="flag">⚠️ Total is ${minsToHH(total)} — must be 07:15 before copying the prompt.</div>` : ''}
+      ${!gapOk ? `<div class="flag">⚠️ Total is ${minsToHG(total)} — must be 07:15 before copying the prompt.</div>` : ''}
+
+      <div class="commit-bar">
+        <button class="btn-commit" id="commitBtn" onclick="approveAndCommit()">✓ Approve &amp; Commit</button>
+        <span class="commit-status" id="commitStatus"></span>
+      </div>
     </div>
 
     <div class="section">
@@ -399,28 +416,14 @@ function render() {
       <div class="prompt-box">${escHtml(prompt)}</div>
       <button class="copy-btn" id="copyBtn" onclick="copyPrompt()">📋 Copy prompt</button>
     </div>
-
-    <div class="section" style="border: 1px solid #1e3a5f;">
-      <h2 style="color:#60a5fa;">⟳ End of Session — do this before you close</h2>
-      <p style="font-size:13px;color:#94a3b8;margin-bottom:14px;">After Chrome confirms 07:15 logged — paste this into Cowork (this seat). I'll update the docs. Then run the git command.</p>
-      <div class="prompt-box" id="eosBox">${escHtml(buildEOSPrompt())}</div>
-      <button class="copy-btn" id="eosBtn" onclick="copyEOS()" style="background:#1e3a5f;">📋 Copy end-of-session prompt</button>
-      <div style="margin-top:16px;">
-        <div style="font-size:12px;color:#64748b;margin-bottom:6px;">Then push to GitHub:</div>
-        <div class="prompt-box" style="max-height:80px;">${escHtml('git add docs/HANDOVER.md docs/STATUS.md docs/reference/CLOCKIFY_KB.md\ngit commit -m "Timesheet logged: ' + fmtDate(today) + '"\ngit push origin main')}</div>
-        <button class="copy-btn" id="gitBtn" onclick="copyGit()" style="background:#14532d;margin-top:10px;">📋 Copy git command</button>
-      </div>
-    </div>
   `;
 
-  // Sync duration picker to selected event's default duration
   const ep = document.getElementById('eventPick');
   if (ep) {
     ep.addEventListener('change', () => {
       const opt = ep.options[ep.selectedIndex];
       const m = parseInt(opt.dataset.mins || 30);
       const dp = document.getElementById('durPick');
-      // Find closest option
       let best = null;
       for (const o of dp.options) {
         if (parseInt(o.value) === m) { best = o; break; }
@@ -444,7 +447,7 @@ function addAdHoc() {
     project = opt.dataset.project || '';
     task    = opt.dataset.task    || '';
   } else {
-    return; // nothing selected
+    return;
   }
 
   const id = 'ah' + (adhocId++);
@@ -454,6 +457,11 @@ function addAdHoc() {
 
 function removeAdHoc(id) {
   adHoc = adHoc.filter(a => a._id !== id);
+  render();
+}
+
+function dismissRecurring(label) {
+  dismissed.add(label);
   render();
 }
 
@@ -471,40 +479,109 @@ function copyPrompt() {
 function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function escAttr(s) { return String(s).replace(/"/g,'&quot;'); }
 
-// ─── END OF SESSION ───────────────────────────────────────────────────────────
-function buildEOSPrompt() {
-  const rows = buildPlan().filter(r => r.type !== 'gapfill');
-  const lines = rows.map(r => `- ${r.label}: ${r.project} / ${r.task || 'BAU'} / ${minsToHH(r.mins)}`).join('\n');
-  return `Clockify session complete for ${fmtDate(today)}.
+// ─── APPROVE & COMMIT ─────────────────────────────────────────────────────────
+async function ghGetSha(pat, repo, path) {
+  const r = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+    headers: { 'Authorization': 'token ' + pat, 'Accept': 'application/vnd.github+json' }
+  });
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error('GET ' + path + ' returned ' + r.status);
+  const d = await r.json();
+  return d.sha;
+}
 
-Entries logged today:
+async function ghPutFile(pat, repo, path, content, message, sha) {
+  const body = { message, content: btoa(unescape(encodeURIComponent(content))) };
+  if (sha) body.sha = sha;
+  const r = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+    method: 'PUT',
+    headers: {
+      'Authorization': 'token ' + pat,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) {
+    const txt = await r.text();
+    throw new Error('PUT ' + path + ' returned ' + r.status + ': ' + txt);
+  }
+  return r.json();
+}
+
+function buildHandover(rows) {
+  const nonGap = rows.filter(r => r.type !== 'gapfill');
+  const gapRow = rows.find(r => r.type === 'gapfill');
+  const lines  = nonGap.map(r => `- ${r.label}: ${r.project} / ${r.task || 'BAU'} / ${minsToHH(r.mins)}`).join('\n');
+  const gapLine = gapRow ? `- Gap fill: ${gapRow.project} / ${gapRow.task || 'BAU'} / ${minsToHH(gapRow.mins)}` : '';
+  return `# HANDOVER_TO_HOPE.md
+> Generated by dashboard on ${fmtDate(today)}
+
+## TL;DR
+Clockify timesheet logged for ${fmtDate(today)}.
+
+## State of Play
+Entries confirmed:
 ${lines}
-- Gap fill: Focussed time: Email and Teams messages / BAU / ${minsToHH(buildPlan().find(r=>r.type==='gapfill').mins)}
+${gapLine}
 
-Please:
-1. Update docs/HANDOVER.md with today's TL;DR, state of play, next action, and watch-outs
-2. Update docs/STATUS.md — move today to Completed, set tomorrow as Up Next
-3. Update docs/reference/CLOCKIFY_KB.md — add today to Logged Days Reference, add any new confirmed mappings
-4. Show me the updated files so I can review before pushing`;
+Daily total: ${minsToHH(DAY_TOTAL)} ✓
+
+## Next Concrete Action
+Open Clockify for ${DAYS[(today.getDay() % 7) + (today.getDay() === 5 ? 2 : 1)]} and repeat the process.
+
+## Watch Out For
+- Check KB for any new calendar events not yet mapped.
+`;
 }
 
-function copyEOS() {
-  navigator.clipboard.writeText(buildEOSPrompt()).then(() => {
-    const btn = document.getElementById('eosBtn');
-    btn.textContent = '✓ Copied!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.innerHTML = '📋 Copy end-of-session prompt'; btn.classList.remove('copied'); }, 2500);
-  });
-}
+async function approveAndCommit() {
+  let pat = localStorage.getItem('clockify_github_pat');
+  if (!pat) {
+    pat = prompt('Enter your GitHub PAT (repo write scope). It will be saved to localStorage for future use:');
+    if (!pat || !pat.trim()) return;
+    pat = pat.trim();
+    localStorage.setItem('clockify_github_pat', pat);
+  }
 
-function copyGit() {
-  const cmd = `git add docs/HANDOVER.md docs/STATUS.md docs/reference/CLOCKIFY_KB.md\ngit commit -m "Timesheet logged: ${fmtDate(today)}"\ngit push origin main`;
-  navigator.clipboard.writeText(cmd).then(() => {
-    const btn = document.getElementById('gitBtn');
-    btn.textContent = '✓ Copied!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.innerHTML = '📋 Copy git command'; btn.classList.remove('copied'); }, 2500);
-  });
+  const btn    = document.getElementById('commitBtn');
+  const status = document.getElementById('commitStatus');
+  btn.disabled = true;
+  btn.textContent = '⏳ Committing…';
+  status.textContent = '';
+
+  const REPO     = 'begb0037admin/clockify';
+  const dateStr  = today.toISOString().slice(0,10);
+  const message  = `docs: EOD update — ${dateStr}`;
+  const rows     = buildPlan();
+  const handoverContent = buildHandover(rows);
+
+  try {
+    // CLOCKIFY_KB.md
+    const kbPath  = 'docs/reference/CLOCKIFY_KB.md';
+    const hoPath  = 'docs/HANDOVER_TO_HOPE.md';
+
+    const [kbSha, hoSha] = await Promise.all([
+      ghGetSha(pat, REPO, kbPath),
+      ghGetSha(pat, REPO, hoPath),
+    ]);
+
+    if (!kbRawContent) throw new Error('KB content not loaded — reload the page and try again.');
+
+    await ghPutFile(pat, REPO, kbPath, kbRawContent, message, kbSha);
+    await ghPutFile(pat, REPO, hoPath, handoverContent, message, hoSha);
+
+    btn.textContent = 'Committed ✓7;
+    btn.style.background = '#15803d';
+    btn.style.color = '#fff';
+    status.textContent = 'CLOCKIFY_KB.md + HANDOVER_TO_HOPE.md pushed to main.';
+    status.style.color = '#4ade80';
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '✓ Approve & Commit';
+    status.textContent = '✗ Error: ' + e.message;
+    status.style.color = '#f87171';
+  }
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
