@@ -97,6 +97,8 @@ Apply on Mondays only.
 | 1-1 Session / [Name] 1-1 / James Salas Guillen 1-1 | Meetings - HR Systems team | Functional Analysts: one-to-ones | 0:30 or 1:00 | Check calendar for duration |
 | Simon / Kevin 121s | Meetings - HR Systems team | HR Systems Management Team: one-to-ones | 1:00 | Wednesdays |
 | HR Systems team meeting | Meetings - HR Systems team | HR Systems Management Team meeting | 1:00 | Wednesdays |
+| Weekly HR Systems Team meeting (14:00-14:30) | Meetings - HR Systems team | Weekly HR Systems Team meeting | 0:30 | Wednesdays |
+| Check in on URL changes for internal mobility webpages (ad-hoc) | Meetings - HR Systems team | Business Change: regular catch-up | 0:15 | Ad-hoc |
 | Azure Integration Platform Sprint Review | Data Platform Project | Meetings and calls | 1:00 | Confirmed 1 Jun 2026 |
 | Hold: Eploy project run through | TSS ePloy integration [119] | — | 0:30 | Confirmed 1 Jun 2026 |
 | DTP1092 College staff in PXD | Research management data for REF [DTP1092] | Meetings and calls | 0:30 | Confirmed 1 Jun 2026 |
@@ -120,4 +122,4 @@ Apply on Mondays only.
 |------|-------|-------|
 | Mon 1 Jun 2026 | 7:15 | Weekly Standard applied. First day back from medical leave. |
 | Tue 2 Jun 2026 | 7:15 | Data Platform, TSS ePloy, DTP1092 rows added manually. |
-| Wed 3 Jun 2026 | 7:15 | FA catchup 0:15, HR Sys Mgmt Team 1-2-1 1:00, HR Sys Mgmt Team meeting 1:00, Focussed time BAU 4:45 (pre-existing First-Line Support 0:15 adjusted gap fill). |
+| Wed 3 Jun 2026 | 7:15 | FA catchup 0:15, HR Sys Mgmt Team 1-2-1 1:00, HR Sys Mgmt Team meeting 1:00, Weekly HR Systems Team meeting 0:30, Business Change regular catch-up 0:15 (URL changes ad-hoc), Focussed time BAU 4:00. Corrected post-session: +2 entries, gap fill 4:45 to 4:00 (pre-existing First-Line Support 0:15 adjusted gap fill). |
