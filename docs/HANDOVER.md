@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-Wednesday 3 June logged successfully. All 4 rows entered; daily total confirmed at 07:15. Task IDs for HR Systems Management Team meeting and HR Systems Management Team: one-to-ones confirmed from Clockify UI — both exist as tasks under project Meetings - HR Systems team (Category: Meetings). KB updated accordingly. Note: a pre-existing First-Line Support: regular catch-up 00:15 entry was present on Wed 3 Jun before logging began; gap fill (Focussed time BAU) was set to 04:45 rather than 05:00 to keep daily total at exactly 07:15.
+Wednesday 3 June logged successfully. 6 rows entered (incl. 2 corrections added post-session: Weekly HR Systems Team meeting 00:30 and Business Change: regular catch-up 00:15 for Check in on URL changes ad-hoc); gap fill adjusted to 04:00; daily total confirmed at 07:15.
 
 ## State of Play
 
