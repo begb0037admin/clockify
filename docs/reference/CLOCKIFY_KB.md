@@ -1,7 +1,7 @@
 # CLOCKIFY_KB.md — Clockify Knowledge Base
 > Living reference. Read this before every Timesheet task.
 > Update this whenever a new mapping is confirmed.
-> Last updated: 2026-06-02
+> Last updated: 2026-06-03
 
 ---
 
@@ -69,8 +69,8 @@ Apply on Mondays only.
 | Functional Analysts: regular catch-up | 699d70ea667a5341a63aaffa | Daily 0:15 |
 | Weekly H&S Roadmap update meeting | 699f08eca11ae720eecb7c97 | Mon 1:00 |
 | Functional Analysts: one-to-ones | 699d71e2afa57c90cad91bbc | When 1-1 occurs |
-| HR Systems Management Team meeting | TBC | Wed 1:00 |
-| HR Systems Management Team: one-to-ones | TBC | Wed Simon/Kevin 121 |
+| HR Systems Management Team meeting | confirmed (verified 2026-06-03) | Wed 1:00 |
+| HR Systems Management Team: one-to-ones | confirmed (verified 2026-06-03) | Wed Simon/Kevin 121 |
 
 ### Funded Projects
 | Project | Task | Project ID | Notes |
@@ -120,3 +120,4 @@ Apply on Mondays only.
 |------|-------|-------|
 | Mon 1 Jun 2026 | 7:15 | Weekly Standard applied. First day back from medical leave. |
 | Tue 2 Jun 2026 | 7:15 | Data Platform, TSS ePloy, DTP1092 rows added manually. |
+| Wed 3 Jun 2026 | 7:15 | FA catchup 0:15, HR Sys Mgmt Team 1-2-1 1:00, HR Sys Mgmt Team meeting 1:00, Focussed time BAU 4:45 (pre-existing First-Line Support 0:15 adjusted gap fill). |
