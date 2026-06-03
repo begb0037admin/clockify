@@ -1,7 +1,7 @@
 # CLOCKIFY_KB.md — Clockify Knowledge Base
 > Living reference. Read this before every Timesheet task.
 > Update this whenever a new mapping is confirmed.
-> Last updated: 2026-06-03
+> Last updated: 2026-06-03 (session 3)
 
 ---
 
@@ -82,6 +82,12 @@ Apply on Mondays only.
 | Data Platform Project | Board Prep | 699c4163d73ba8168f02d442 | — |
 | Data Platform Project | Project Board | 699c4163d73ba8168f02d442 | — |
 
+### Functional Analyst Team Activities
+| Project | Task | Description field | Notes |
+|---------|------|-------------------|-------|
+| Functional Analyst Team activities | BAU | H&S BAU | H&S-related BAU work. Use to decode Busy blocks linked to H&S. Confirmed 2026-06-03. |
+| Functional Analyst Team activities | BAU | PXD - BAU | PXD-related BAU work. Use to decode Busy blocks linked to PXD. Confirmed 2026-06-03. |
+
 ### BAU Initiatives
 | Project | Task | Project ID | Notes |
 |---------|------|------------|-------|
@@ -95,16 +101,26 @@ Apply on Mondays only.
 | FA Team Daily Catchup | Meetings - HR Systems team | Functional Analysts: regular catch-up | 0:15 | Every weekday |
 | H&S Roadmap | Meetings - HR Systems team | Weekly H&S Roadmap update meeting | 1:00 | Mondays |
 | 1-1 Session / [Name] 1-1 / James Salas Guillen 1-1 | Meetings - HR Systems team | Functional Analysts: one-to-ones | 0:30 or 1:00 | Check calendar for duration |
-| Simon / Kevin 121s | Meetings - HR Systems team | HR Systems Management Team: one-to-ones | 1:00 | Wednesdays |
-| HR Systems team meeting | Meetings - HR Systems team | HR Systems Management Team meeting | 1:00 | Wednesdays |
-| Weekly HR Systems Team meeting (14:00-14:30) | Meetings - HR Systems team | Weekly HR Systems Team meeting | 0:30 | Wednesdays |
+| Simon / Kevin 121s | Meetings - HR Systems team | HR Systems Management Team: one-to-ones | 1:00 | Fortnightly from Wed 10 Jun. Do NOT log before then. |
+| HR Systems team meeting | Meetings - HR Systems team | HR Systems Management Team meeting | 1:00 | Fortnightly from Wed 10 Jun. Do NOT log before then. |
+| Weekly HR Systems Team meeting (14:00-14:30) | Meetings - HR Systems team | Weekly HR Systems Team meeting | 0:30 | Every Wednesday |
 | Check in on URL changes for internal mobility webpages (ad-hoc) | Meetings - HR Systems team | Business Change: regular catch-up | 0:15 | Ad-hoc |
 | Azure Integration Platform Sprint Review | Data Platform Project | Meetings and calls | 1:00 | Confirmed 1 Jun 2026 |
 | Hold: Eploy project run through | TSS ePloy integration [119] | — | 0:30 | Confirmed 1 Jun 2026 |
 | DTP1092 College staff in PXD | Research management data for REF [DTP1092] | Meetings and calls | 0:30 | Confirmed 1 Jun 2026 |
 | DTP1092 work (general) | Research management data for REF [DTP1092] | — | As per calendar | — |
 | Keep free | — | — | — | Do not log. Treat as focus time, absorbed into gap fill. |
-| Busy (unknown) | — | — | — | Ask Kevin before logging. See OPEN_QUESTIONS OQ-01. |
+| Busy — H&S work | Functional Analyst Team activities | BAU | As per duration | Description: "H&S BAU". Use when Busy block is H&S-related. |
+| Busy — PXD work | Functional Analyst Team activities | BAU | As per duration | Description: "PXD - BAU". Use when Busy block is PXD-related. |
+| Busy (unidentified) | — | — | — | Ask Kevin before logging. See OQ-01. |
+
+---
+
+## Open Questions
+| ID | Question | Raised | Status |
+|----|----------|--------|--------|
+| OQ-01 | Busy blocks Tue 2 Jun — H&S BAU or PXD - BAU now available as decode options. Still need Kevin to confirm which applies to each block. | 2026-06-03 | Partially resolved — awaiting Kevin confirmation |
+| OQ-02 | Weekly HR Systems Team meeting (0:30, Wed) — is this also fortnightly from 10 Jun, or weekly every Wednesday? | 2026-06-03 | Resolved 2026-06-03 — weekly every Wednesday |
 
 ---
 
