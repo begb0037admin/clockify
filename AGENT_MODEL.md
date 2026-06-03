@@ -11,87 +11,65 @@ It changes rarely. Per-project state lives in STATUS.md and HANDOVER.md.
 
 ## 1. The Four Seats
 
-### Seat A — Project Claude (Architecture, Reasoning, Routing)
+### Seat A — Kevin's Chat (Reasoning, Routing, Daily Operations Driver)
 
-- **Where it runs:** Claude.ai Project, in the project workspace.
+- **Where it runs:** Claude.ai chat (Hope or Kevin seat), opened each morning.
 - **What it owns:**
-  - All reasoning, architecture, and trade-off analysis.
-  - Drafting ADRs, updating OPEN_QUESTIONS.md, ROADMAP.md, RISKS.md.
-  - Writing RUN SCRIPT commands for Kev to execute.
-  - Writing COWORK BRIEFs for Kev to paste into Cowork.
-  - Writing CHROME BRIEFs for Kev to paste into Chrome.
-  - Every session starts here. No other seat opens without a
-    dispatch command from this seat.
+  * All reasoning, planning, and routing.
+  * Reading Granola via MCP to pull today's meetings.
+  * Reading Outlook inbox via Chrome.
+  * Building the daily Clockify timesheet plan.
+  * Pushing KB updates and HANDOVER files to GitHub via API (PAT from MORNING.md).
+  * Generating inbox briefing and pushing to GitHub Pages via API.
+  * Issuing Chrome commands to Seat D for Clockify entry logging.
+  * Writing COWORK BRIEFs for structural/build work only.
+  * Every daily session starts here.
 - **What it does not own:**
-  - Does not write to disk.
-  - Does not run terminal commands.
-  - Does not open Cowork or Chrome directly — issues briefs for Kev
-    to action.
+  * Does not execute browser clicks directly — issues commands to Seat D.
+  * Does not make structural code changes to the dashboard — that is Seat C.
 
 ---
 
-### Seat B — Kev + VS Code Terminal (Script Execution)
+### Seat B — Kev + VS Code Terminal (Not used in daily ops)
 
-- **Where it runs:** VS Code integrated terminal, on the project machine.
+- **Where it runs:** VS Code integrated terminal.
 - **What it owns:**
-  - Running 🔵 RUN SCRIPT commands issued by Seat A exactly as given.
-  - Pasting results back to Seat A exactly as returned — no
-    interpretation, no summarising.
-  - Pasting 🟡 COWORK BRIEF blocks into Cowork exactly as written.
-  - Pasting 🔴 CHROME BRIEF blocks into Chrome exactly as written.
+  * Available for one-off script execution if needed.
 - **What it does not own:**
-  - Never interprets, rewrites, or summarises a brief before pasting.
-  - Never makes file edits directly — all writes go through Seat C.
-  - RUN SCRIPTs are always read-only. Any script that would modify
-    disk is a mistake — push back to Seat A.
+  * Not part of the daily Clockify workflow.
+  * Not needed unless Seat A specifically dispatches a RUN SCRIPT command.
 
 ---
 
-### Seat C — Cowork (Disk Writes, Git, Verification)
+### Seat C — Cowork (Dashboard Builds and Structural Changes)
 
-- **Where it runs:** Cowork, with file tools and bash shell pointed
-  at the project folder.
+- **Where it runs:** Cowork, with file tools and bash shell.
 - **What it owns:**
-  - All file writes to the project on disk. This is the only seat
-    with that authority.
-  - Applying edits drafted by Seat A — code changes, doc updates,
-    ADR files, STATUS.md, HANDOVER.md.
-  - Running verification commands: node audit/verify.mjs, git status,
-    git add, git commit.
-  - Reporting results back exactly — output verbatim, no editorialising.
+  * All structural changes to `index.html` (dashboard builds, feature additions, fixes).
+  * Applying COWORK BRIEFs issued by Seat A.
+  * Git commits and pushes for code changes.
+  * Reporting results back exactly — output verbatim, no editorialising.
 - **What it does not own:**
-  - Does not invent architecture or make decisions. If something
-    unexpected requires a decision, it stops and reports back.
-  - Does not validate live UI behaviour — that is Seat D.
-  - **Stop-and-report rule:** if anything unexpected is encountered
-    mid-task — a file that doesn't match, a test that fails — Cowork
-    stops immediately, reports the exact error back to Kev, and waits.
-    It does not attempt to solve the problem itself.
-- **Brief format rule:**
-  - COWORK BRIEFs contain commands only. No prose lines mixed in.
-    PowerShell executes every line — prose causes errors.
+  * Not part of daily operations. Called only for build/fix work.
+  * Does not make architectural decisions. Stop and report if something unexpected requires a decision.
+  * Does not validate live UI behaviour — that is Seat D.
+- **Stop-and-report rule:** If anything unexpected is encountered mid-task, stop immediately, report the exact error, and wait. Do not attempt to solve the problem.
+- **Brief format rule:** COWORK BRIEFs contain commands only. No prose lines mixed in.
 
 ---
 
-### Seat D — Chrome Claude (Browser Smoke-Test)
+### Seat D — Chrome / Claude in Chrome (Clockify Executor)
 
-- **Where it runs:** Claude in Chrome extension, against the live
-  prototype at localhost or a deployed URL.
+- **Where it runs:** Claude in Chrome extension, against https://app.clockify.me/timesheet
 - **What it owns:**
-  - Driving the running prototype as a user would.
-  - Smoke-testing newly-shipped behaviour end-to-end.
-  - Reading DOM, console messages, network requests.
-  - Reporting findings verbatim — what it sees, not what it expects.
+  * Executing Clockify timesheet entry clicks on instruction from Seat A.
+  * Confirming 07:15 daily total is reached.
+  * Reporting exactly what it sees — no interpretation.
 - **What it does not own:**
-  - No disk read or write.
-  - No terminal, no git, no node.
-  - No code edits — not even one-line fixes.
-  - No project documentation — Chrome reads the live page only.
-  - Cannot drop files onto the page itself — asks Kev to do it.
-- **Brief format rule:**
-  - CHROME BRIEFs are numbered checklists with specific expected
-    outputs. No vague instructions. Chrome reports exactly what
-    it sees against each numbered step.
+  * No reasoning or planning — executor only.
+  * No disk read or write.
+  * No terminal, no git, no node.
+  * No code edits.
 
 ---
 
@@ -179,17 +157,15 @@ the output is a handoff to Seat C — not an edit attempt.
 
 ## 7. Quick Reference
 
-| Seat | Surface | Reads | Writes | Terminal |
-|---|---|---|---|---|
-| A — Project Claude | Claude.ai Project | Uploaded docs | Nothing on disk | None |
-| B — Kev + VS Code | VS Code terminal | Terminal output | Nothing directly | Runs scripts |
-| C — Cowork | Cowork + bash | All docs + source | Everything | git, node, bash |
-| D — Chrome | Chrome extension | Live page DOM only | Nothing on disk | None |
+| Seat | Surface | Daily ops? | Role |
+|------|---------|------------|------|
+| A — Kevin's Chat | Claude.ai chat | ✅ Yes — primary driver | Reasoning, Granola, Outlook, GitHub API writes, Chrome dispatch |
+| B — Kev + VS Code | VS Code terminal | ❌ No | Manual script execution only if dispatched |
+| C — Cowork | Cowork + bash | ❌ Not daily — build/fix only | Dashboard builds, structural index.html changes |
+| D — Chrome | Claude in Chrome | ✅ Yes — executor only | Logs Clockify entries on instruction from Seat A |
 
 ---
 
 ## Last updated
 
-2026-05-18 — Four-seat model. Seat B (Kev + VS Code) added as
-formal execution seat. Dispatch language formalised. ChatGPT
-removed. Stop-and-report rule locked for Cowork.
+2026-06-03 — Architecture redesign. Seat A now drives daily ops directly (Granola MCP, Outlook via Chrome, GitHub API). Cowork retired from daily ops — build/fix only. Seat D is executor only.
