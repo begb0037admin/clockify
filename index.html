@@ -3,590 +3,69 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Clockify Morning Brief</title>
+<title>Clockify &mdash; Time Entry Dashboard</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #0f1117;
-    color: #e2e8f0;
-    min-height: 100vh;
-    padding: 32px 24px;
-  }
-  .container { max-width: 860px; margin: 0 auto; }
 
-  .header { margin-bottom: 32px; }
-  .header h1 { font-size: 22px; font-weight: 600; color: #f8fafc; }
-  .header .date { font-size: 14px; color: #64748b; margin-top: 4px; }
-  .status-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
-  .badge {
-    font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 99px;
-    text-transform: uppercase; letter-spacing: 0.05em;
-  }
-  .badge-ok  { background: #14532d; color: #4ade80; }
-  .badge-warn{ background: #713f12; color: #fbbf24; }
-  .badge-err { background: #7f1d1d; color: #f87171; }
-  .badge-info{ background: #1e3a5f; color: #60a5fa; }
-  .reload-btn {
-    font-size: 12px; color: #60a5fa; background: none; border: 1px solid #1e3a5f;
-    border-radius: 6px; padding: 3px 10px; cursor: pointer;
-  }
-  .reload-btn:hover { background: #1e3a5f; }
-
-  .section { background: #1e2130; border-radius: 10px; padding: 20px 24px; margin-bottom: 16px; }
-  .section h2 { font-size: 13px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
-
-  .handover-text { font-size: 13px; color: #cbd5e1; line-height: 1.6; white-space: pre-wrap; }
-
-  table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  th { text-align: left; padding: 6px 10px; color: #64748b; font-weight: 500; font-size: 12px; border-bottom: 1px solid #2d3448; }
-  td { padding: 9px 10px; border-bottom: 1px solid #1a1f2e; vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
-  .row-gapfill td { color: #94a3b8; font-style: italic; }
-  .row-total td { font-weight: 700; color: #f8fafc; border-top: 2px solid #2d3448; padding-top: 12px; }
-  .dur { font-variant-numeric: tabular-nums; font-family: monospace; font-size: 13px; }
-  .dur-ok   { color: #4ade80; }
-  .dur-warn { color: #fbbf24; }
-  .dur-err  { color: #f87171; }
-  .tag { font-size: 11px; background: #2d3448; color: #94a3b8; padding: 2px 7px; border-radius: 4px; }
-  small { color: #64748b; font-size: 12px; }
-
-  .add-row { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; align-items: flex-end; }
-  .add-row label { font-size: 12px; color: #64748b; display: block; margin-bottom: 4px; }
-  .add-row select, .add-row input {
-    background: #0f1117; border: 1px solid #2d3448; border-radius: 6px;
-    color: #e2e8f0; padding: 7px 10px; font-size: 13px;
-  }
-  .add-row select.event-pick { min-width: 280px; max-width: 380px; }
-  .add-row select.dur-pick { width: 80px; }
-  .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; }
-  .btn-add { background: #1e3a5f; color: #60a5fa; }
-  .btn-add:hover { background: #1d4ed8; color: #fff; }
-  .btn-remove { background: transparent; color: #f87171; font-size: 12px; padding: 4px 8px; border: 1px solid #3d1f1f; border-radius: 4px; cursor: pointer; }
-
-  .monday-notice {
-    background: #1a2e1a; border: 1px solid #14532d; border-radius: 8px;
-    padding: 10px 14px; font-size: 13px; color: #4ade80; margin-bottom: 14px;
-  }
-  .flag {
-    background: #1c1a00; border: 1px solid #713f12; border-radius: 7px;
-    padding: 10px 14px; margin-top: 12px; font-size: 13px; color: #fde68a;
-  }
-
-  .prompt-box {
-    background: #0f1117; border: 1px solid #2d3448; border-radius: 8px;
-    padding: 16px; font-size: 13px; font-family: monospace; color: #cbd5e1;
-    white-space: pre-wrap; line-height: 1.6; max-height: 420px; overflow-y: auto;
-  }
-  .copy-btn {
-    background: #1d4ed8; color: #fff; margin-top: 12px; padding: 10px 20px;
-    border-radius: 7px; font-size: 14px; font-weight: 600; border: none; cursor: pointer;
-    display: inline-flex; align-items: center; gap: 8px;
-  }
-  .copy-btn:hover { background: #2563eb; }
-  .copy-btn.copied { background: #15803d; }
-
-  .weekend-msg { text-align: center; padding: 60px 20px; }
-  .weekend-msg .emoji { font-size: 48px; margin-bottom: 16px; }
-  .weekend-msg h2 { font-size: 20px; color: #f8fafc; }
-  .weekend-msg p { color: #64748b; margin-top: 8px; }
-
-  .spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid #2d3448; border-top-color: #60a5fa; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  select:focus, input:focus { outline: 2px solid #1d4ed8; outline-offset: 1px; }
-
-  .commit-bar { display: flex; align-items: center; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
-  .btn-commit { background: #14532d; color: #4ade80; padding: 10px 20px; border-radius: 7px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; }
-  .btn-commit:hover { background: #166534; }
-  .btn-commit:disabled { opacity: 0.5; cursor: not-allowed; }
-  .commit-status { font-size: 13px; color: #94a3b8; }
-</style>
-</head>
-<body>
-<div class="container">
-  <div class="header">
-    <h1>☕ Clockify Morning Brief</h1>
-    <div class="date" id="dateDisplay"></div>
-    <div class="status-row" id="statusRow">
-      <span class="badge badge-info"><span class="spinner"></span>Loading KB…</span>
-    </div>
-  </div>
-  <div id="mainContent"></div>
-</div>
-
-<script>
-// \u2500\u2500\u2500 CONFIG \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-const BASE = 'https://raw.githubusercontent.com/begb0037admin/clockify/main';
-const URLS = {
-  claude:   BASE + '/CLAUDE.md',
-  status:   BASE + '/docs/STATUS.md',
-  handover: BASE + '/docs/HANDOVER.md',
-  kb:       BASE + '/docs/reference/CLOCKIFY_KB.md',
-};
-const DAY_TOTAL = 7 * 60 + 15; // 435 mins
-
-// \u2500\u2500\u2500 STATE \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-let today        = new Date();
-let kbEvents     = [];   // parsed from KB Calendar Event Mapping table
-let adHoc        = [];   // { _id, label, project, task, mins }
-let dismissed    = new Set(); // labels of recurring rows dismissed this session
-let handover     = '';
-let kbRawContent = '';   // raw KB markdown, used by Approve & Commit
-let loadedOk     = false;
-let loadErrors   = [];
-let adhocId      = 0;
-
-// \u2500\u2500\u2500 DATE UTILS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-function fmtDate(d) {
-  return d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-}
-function minsToHH(m) {
-  if (m < 0) m = 0;
-  return String(Math.floor(m/60)).padStart(2,'0') + ':' + String(m%60).padStart(2,'0');
-}
-function isWeekend(d) { return d.getDay()===0 || d.getDay()===6; }
-
-// \u2500\u2500\u2500 KB PARSER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-function parseTable(text, headerPattern) {
-  const lines = text.split('\n');
-  let inSection = false, inTable = false, headers = [], rows = [];
-  for (let i = 0; i < lines.length; i++) {
-    const l = lines[i];
-    if (headerPattern.test(l)) { inSection = true; continue; }
-    if (inSection && /^##/.test(l) && !headerPattern.test(l)) break;
-    if (!inSection) continue;
-    if (/^\|/.test(l)) {
-      const cells = l.split('|').map(c => c.trim()).filter((_,i,a) => i>0 && i<a.length-1);
-      if (!headers.length) { headers = cells; continue; }
-      if (/^[-| ]+$/.test(l)) continue;
-      const obj = {};
-      headers.forEach((h,i) => obj[h] = cells[i] || '');
-      rows.push(obj);
-    }
-  }
-  return rows;
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',sans-serif;
+  background:#f2f6f8;
+  color:#333333;
+  font-size:14px;
+  line-height:1.5;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
 }
 
-function parseDurMins(s) {
-  const m = s.match(/(\d+):(\d+)/);
-  return m ? parseInt(m[1])*60 + parseInt(m[2]) : null;
+/* ============================================================
+   TOPBAR
+   ============================================================ */
+.topbar{
+  background:#ffffff;
+  border-bottom:1px solid #e8edf0;
+  height:56px;
+  display:flex;
+  align-items:center;
+  padding:0 28px;
+  gap:12px;
+  position:sticky;
+  top:0;
+  z-index:100;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+}
+.logo{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  font-size:15px;
+  font-weight:700;
+  color:#03a9f4;
+  letter-spacing:-.2px;
+  text-decoration:none;
+}
+.logo:hover{color:#0288d1}
+.logo svg{flex-shrink:0}
+.topbar-date{
+  margin-left:auto;
+  font-size:12px;
+  color:#999999;
 }
 
-function notesToDow(notes) {
-  const n = notes.toLowerCase();
-  if (/every weekday|mon.{0,5}fri|daily/.test(n)) return [1,2,3,4,5];
-  if (/monday/.test(n))    return [1];
-  if (/tuesday/.test(n))   return [2];
-  if (/wednesday/.test(n)) return [3];
-  if (/thursday/.test(n))  return [4];
-  if (/friday/.test(n))    return [5];
-  return null;
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.main{
+  max-width:980px;
+  margin:0 auto;
+  padding:24px 20px 48px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
 }
 
-function parseKB(text) {
-  const rows = parseTable(text, /## Calendar Event to Project\/Task Mapping/);
-  return rows
-    .filter(r => r['Calendar event'] && r['Project'] && r['Project'] !== '\u2014')
-    .map(r => ({
-      label:    r['Calendar event'],
-      project:  r['Project'],
-      task:     r['Task'] === '\u2014' ? '' : r['Task'],
-      mins:     parseDurMins(r['Duration']),
-      notes:    r['Notes'] || '',
-      dow:      notesToDow(r['Notes'] || ''),
-      variable: /or|as per/i.test(r['Duration']),
-    }));
-}
+.weekend-msg{text-align:center;padding:60px 20px}
 
-function extractHandover(text) {
-  if (!text) return 'Could not load.';
-  const lines = text.split('\n');
-  let out = [], capture = false;
-  for (const l of lines) {
-    if (/^## (TL;DR|State of Play|Next Concrete Action)/i.test(l)) capture = true;
-    else if (/^## Watch Out For/i.test(l)) capture = false;
-    if (capture) out.push(l);
-  }
-  return out.join('\n').trim() || text.slice(0,600);
-}
-
-// \u2500\u2500\u2500 FETCH \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-async function fetchFile(url) {
-  const r = await fetch(url, { cache:'no-cache' });
-  if (!r.ok) throw new Error(r.status);
-  return r.text();
-}
-
-async function bootstrap() {
-  loadErrors = [];
-  try {
-    const [, , handoverRaw, kbRaw] = await Promise.all([
-      fetchFile(URLS.claude).catch(()=>{ loadErrors.push('CLAUDE.md'); return ''; }),
-      fetchFile(URLS.status).catch(()=>{ loadErrors.push('STATUS.md'); return ''; }),
-      fetchFile(URLS.handover).catch(()=>{ loadErrors.push('HANDOVER.md'); return ''; }),
-      fetchFile(URLS.kb).catch(()=>{ loadErrors.push('CLOCKIFY_KB.md'); return ''; }),
-    ]);
-    handover     = extractHandover(handoverRaw);
-    kbRawContent = kbRaw;
-    kbEvents     = parseKB(kbRaw);
-    loadedOk     = loadErrors.length === 0;
-  } catch(e) {
-    loadedOk = false;
-  }
-  render();
-}
-
-// \u2500\u2500\u2500 PLAN BUILDER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-function buildPlan() {
-  const dow = today.getDay();
-  const rows = [];
-
-  for (const ev of kbEvents) {
-    if (ev.dow && ev.dow.includes(dow) && ev.mins !== null && !ev.variable && !dismissed.has(ev.label)) {
-      rows.push({ label: ev.label, project: ev.project, task: ev.task, mins: ev.mins, type: 'recurring' });
-    }
-  }
-
-  for (const a of adHoc) rows.push({ ...a, type: 'adhoc' });
-
-  const meetingMins = rows.reduce((s,r) => s+r.mins, 0);
-  rows.push({
-    label: 'Gap fill', project: 'Focussed time: Email and Teams messages', task: 'BAU',
-    mins: DAY_TOTAL - meetingMins, type: 'gapfill'
-  });
-  return rows;
-}
-
-// \u2500\u2500\u2500 PROMPT BUILDER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-function buildPrompt(rows) {
-  const isMonday = today.getDay() === 1;
-  const gapRow   = rows.find(r => r.type === 'gapfill');
-  const nonGap   = rows.filter(r => r.type !== 'gapfill');
-  const total    = rows.reduce((s,r) => s+r.mins, 0);
-
-  let n = 1;
-  let lines = '';
-  if (isMonday) {
-    lines += `${n++}. Apply the Weekly Standard template in Clockify before adding any rows.\n`;
-  }
-  for (const r of nonGap) {
-    lines += `${n++}. Project: ${r.project} | Task: ${r.task || 'BAU'} | Duration: ${minsToHH(r.mins)}\n`;
-  }
-  if (gapRow) {
-    lines += `${n++}. Project: ${gapRow.project} | Task: ${gapRow.task || 'BAU'} | Duration: ${minsToHH(gapRow.mins)} [GAP FILL \u2014 enter last]\n`;
-  }
-
-  return `Clockify timesheet instructions \u2014 ${fmtDate(today)}
-
-Navigate to: https://app.clockify.me/timesheet
-Confirm the correct week is showing.
-
-Log entries in this exact order:
-
-${lines.trim()}
-
-Task selection rule: click the arrow next to "N Tasks" to expand inline. Do NOT click the task count badge.
-
-Confirm daily total in Clockify = ${minsToHH(DAY_TOTAL)} before finishing.
-Report back when done.`;
-}
-
-// \u2500\u2500\u2500 RENDER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-function render() {
-  document.getElementById('dateDisplay').textContent = fmtDate(today);
-  const statusRow = document.getElementById('statusRow');
-  const main      = document.getElementById('mainContent');
-
-  statusRow.innerHTML = '';
-  if (loadedOk) {
-    statusRow.innerHTML += `<span class="badge badge-ok">KB live \u2713</span>`;
-  } else if (kbEvents.length) {
-    statusRow.innerHTML += `<span class="badge badge-warn">KB partial</span>`;
-  } else {
-    statusRow.innerHTML += `<span class="badge badge-err">KB failed</span>`;
-  }
-  if (loadErrors.length) {
-    statusRow.innerHTML += `<span class="badge badge-warn">Missing: ${loadErrors.join(', ')}</span>`;
-  }
-  if (today.getDay() === 1) {
-    statusRow.innerHTML += `<span class="badge badge-warn">Monday \u2014 apply template</span>`;
-  }
-  statusRow.innerHTML += `<button class="reload-btn" onclick="location.reload()">\u21BA Reload</button>`;
-
-  if (isWeekend(today)) {
-    main.innerHTML = `<div class="weekend-msg"><div class="emoji">\uD83D\uDECB\uFE0F</div><h2>No timesheet today.</h2><p>${fmtDate(today)}</p></div>`;
-    return;
-  }
-
-  const rows   = buildPlan();
-  const total  = rows.reduce((s,r) => s+r.mins, 0);
-  const gapRow = rows.find(r => r.type === 'gapfill');
-  const gapOk  = gapRow && gapRow.mins >= 0 && total === DAY_TOTAL;
-  const totalCls = total === DAY_TOTAL ? 'dur-ok' : total > DAY_TOTAL ? 'dur-err' : 'dur-warn';
-
-  const tableRows = rows.map(r => {
-    const cls = r.type === 'gapfill' ? 'row-gapfill' : '';
-    let rm = '';
-    if (r.type === 'adhoc') {
-      rm = `<button class="btn-remove" onclick="removeAdHoc('${r._id}')">\u2715</button>`;
-    } else if (r.type === 'recurring') {
-      rm = `<button class="btn-remove" onclick="dismissRecurring('${escAttr(r.label)}')">\u2715</button>`;
-    }
-    return `<tr class="${cls}">
-      <td>${escHtml(r.project)}<br><small>${escHtml(r.task || '')}</small></td>
-      <td><span class="tag">${escHtml(r.label)}</span></td>
-      <td><span class="dur">${minsToHH(r.mins)}</span></td>
-      <td>${rm}</td>
-    </tr>`;
-  }).join('');
-
-  const recurringLabels = new Set(rows.filter(r=>r.type==='recurring').map(r=>r.label));
-  const SKIP = /keep free|busy \(unknown\)|gap fill/i;
-  const pickable = kbEvents.filter(ev =>
-    !recurringLabels.has(ev.label) && !SKIP.test(ev.label) && ev.mins !== null
-  );
-  const pickerOptions = pickable.map(ev =>
-    `<option value="${escAttr(ev.label)}" data-mins="${ev.mins}" data-project="${escAttr(ev.project)}" data-task="${escAttr(ev.task||'')}">${escHtml(ev.label)} (${minsToHH(ev.mins)})</option>`
-  ).join('');
-  const hasPickable = pickable.length > 0;
-
-  const mondayNotice = today.getDay()===1
-    ? `<div class="monday-notice">\u26A0\uFE0F Monday \u2014 click <strong>Apply</strong> on the Weekly Standard template in Clockify before adding rows.</div>` : '';
-
-  const prompt = buildPrompt(rows);
-
-  main.innerHTML = `
-    <div class="section">
-      <h2>Last Handover</h2>
-      <div class="handover-text">${escHtml(handover || 'Loading\u2026')}</div>
-    </div>
-
-    <div class="section">
-      <h2>Today's Plan \u2014 ${DAYS[today.getDay()]}</h2>
-      ${mondayNotice}
-      <table>
-        <thead><tr><th>Project / Task</th><th>Event</th><th>Duration</th><th></th></tr></thead>
-        <tbody>${tableRows}</tbody>
-        <tfoot>
-          <tr class="row-total">
-            <td colspan="2">Total</td>
-            <td><span class="dur ${totalCls}">${minsToHH(total)}</span></td>
-            <td></td>
-          </tr>
-        </tfoot>
-      </table>
-
-      <div class="add-row">
-        ${hasPickable ? `
-        <div>
-          <label>Add a meeting from KB</label>
-          <select class="event-pick" id="eventPick">
-            <option value="">\u2014 select event \u2014</option>
-            ${pickerOptions}
-          </select>
-        </div>` : ''}
-        <div>
-          <label>Duration override</label>
-          <select class="dur-pick" id="durPick">
-            <option value="15">0:15</option>
-            <option value="30" selected>0:30</option>
-            <option value="45">0:45</option>
-            <option value="60">1:00</option>
-            <option value="90">1:30</option>
-            <option value="120">2:00</option>
-          </select>
-        </div>
-        <div>
-          <label>&nbsp;</label>
-          <button class="btn btn-add" onclick="addAdHoc()">+ Add</button>
-        </div>
-      </div>
-      ${!gapOk ? `<div class="flag">\u26A0\uFE0F Total is ${minsToHH(total)} \u2014 must be 07:15 before copying the prompt.</div>` : ''}
-
-      <div class="commit-bar">
-        <button class="btn-commit" id="commitBtn" onclick="approveAndCommit()">\u2713 Approve &amp; Commit</button>
-        <span class="commit-status" id="commitStatus"></span>
-      </div>
-    </div>
-
-    <div class="section">
-      <h2>Claude in Chrome Prompt \u2014 copy &amp; paste</h2>
-      <div class="prompt-box">${escHtml(prompt)}</div>
-      <button class="copy-btn" id="copyBtn" onclick="copyPrompt()">\uD83D\uDCCB Copy prompt</button>
-    </div>
-  `;
-
-  const ep = document.getElementById('eventPick');
-  if (ep) {
-    ep.addEventListener('change', () => {
-      const opt = ep.options[ep.selectedIndex];
-      const m = parseInt(opt.dataset.mins || 30);
-      const dp = document.getElementById('durPick');
-      let best = null;
-      for (const o of dp.options) {
-        if (parseInt(o.value) === m) { best = o; break; }
-        if (!best || Math.abs(parseInt(o.value)-m) < Math.abs(parseInt(best.value)-m)) best = o;
-      }
-      if (best) dp.value = best.value;
-    });
-  }
-}
-
-// \u2500\u2500\u2500 AD HOC \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-function addAdHoc() {
-  const ep = document.getElementById('eventPick');
-  const dp = document.getElementById('durPick');
-  const mins = parseInt(dp.value);
-
-  let label, project, task;
-  if (ep && ep.value) {
-    const opt = ep.options[ep.selectedIndex];
-    label   = opt.value;
-    project = opt.dataset.project || '';
-    task    = opt.dataset.task    || '';
-  } else {
-    return;
-  }
-
-  const id = 'ah' + (adhocId++);
-  adHoc.push({ _id: id, label, project, task, mins });
-  render();
-}
-
-function removeAdHoc(id) {
-  adHoc = adHoc.filter(a => a._id !== id);
-  render();
-}
-
-function dismissRecurring(label) {
-  dismissed.add(label);
-  render();
-}
-
-function copyPrompt() {
-  const text = buildPrompt(buildPlan());
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('copyBtn');
-    btn.textContent = '\u2713 Copied!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.innerHTML = '\uD83D\uDCCB Copy prompt'; btn.classList.remove('copied'); }, 2500);
-  });
-}
-
-// \u2500\u2500\u2500 ESCAPE HELPERS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function escAttr(s) { return String(s).replace(/"/g,'&quot;'); }
-
-// \u2500\u2500\u2500 APPROVE & COMMIT \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-async function ghGetSha(pat, repo, path) {
-  const r = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
-    headers: { 'Authorization': 'token ' + pat, 'Accept': 'application/vnd.github+json' }
-  });
-  if (r.status === 404) return null;
-  if (!r.ok) throw new Error('GET ' + path + ' returned ' + r.status);
-  const d = await r.json();
-  return d.sha;
-}
-
-async function ghPutFile(pat, repo, path, content, message, sha) {
-  const body = { message, content: btoa(unescape(encodeURIComponent(content))) };
-  if (sha) body.sha = sha;
-  const r = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
-    method: 'PUT',
-    headers: {
-      'Authorization': 'token ' + pat,
-      'Accept': 'application/vnd.github+json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(body)
-  });
-  if (!r.ok) {
-    const txt = await r.text();
-    throw new Error('PUT ' + path + ' returned ' + r.status + ': ' + txt);
-  }
-  return r.json();
-}
-
-function buildHandover(rows) {
-  const nonGap = rows.filter(r => r.type !== 'gapfill');
-  const gapRow = rows.find(r => r.type === 'gapfill');
-  const lines  = nonGap.map(r => `- ${r.label}: ${r.project} / ${r.task || 'BAU'} / ${minsToHH(r.mins)}`).join('\n');
-  const gapLine = gapRow ? `- Gap fill: ${gapRow.project} / ${gapRow.task || 'BAU'} / ${minsToHH(gapRow.mins)}` : '';
-  return `# HANDOVER_TO_HOPE.md
-> Generated by dashboard on ${fmtDate(today)}
-
-## TL;DR
-Clockify timesheet logged for ${fmtDate(today)}.
-
-## State of Play
-Entries confirmed:
-${lines}
-${gapLine}
-
-Daily total: ${minsToHH(DAY_TOTAL)} \u2713
-
-## Next Concrete Action
-Open Clockify for ${DAYS[(today.getDay() % 7) + (today.getDay() === 5 ? 2 : 1)]} and repeat the process.
-
-## Watch Out For
-- Check KB for any new calendar events not yet mapped.
-`;
-}
-
-async function approveAndCommit() {
-  let pat = localStorage.getItem('clockify_github_pat');
-  if (!pat) {
-    pat = prompt('Enter your GitHub PAT (repo write scope). It will be saved to localStorage for future use:');
-    if (!pat || !pat.trim()) return;
-    pat = pat.trim();
-    localStorage.setItem('clockify_github_pat', pat);
-  }
-
-  const btn    = document.getElementById('commitBtn');
-  const status = document.getElementById('commitStatus');
-  btn.disabled = true;
-  btn.textContent = '\u23F3 Committing\u2026';
-  status.textContent = '';
-
-  const REPO     = 'begb0037admin/clockify';
-  const dateStr  = today.toISOString().slice(0,10);
-  const message  = `docs: EOD update \u2014 ${dateStr}`;
-  const rows     = buildPlan();
-  const handoverContent = buildHandover(rows);
-
-  try {
-    // CLOCKIFY_KB.md
-    const kbPath  = 'docs/reference/CLOCKIFY_KB.md';
-    const hoPath  = 'docs/HANDOVER_TO_HOPE.md';
-
-    const [kbSha, hoSha] = await Promise.all([
-      ghGetSha(pat, REPO, kbPath),
-      ghGetSha(pat, REPO, hoPath),
-    ]);
-
-    if (!kbRawContent) throw new Error('KB content not loaded \u2014 reload the page and try again.');
-
-    await ghPutFile(pat, REPO, kbPath, kbRawContent, message, kbSha);
-    await ghPutFile(pat, REPO, hoPath, handoverContent, message, hoSha);
-
-    btn.textContent = 'Committed \u2713';
-    btn.style.background = '#15803d';
-    btn.style.color = '#fff';
-    status.textContent = 'CLOCKIFY_KB.md + HANDOVER_TO_HOPE.md pushed to main.';
-    status.style.color = '#4ade80';
-  } catch(e) {
-    btn.disabled = false;
-    btn.textContent = '\u2713 Approve & Commit';
-    status.textContent = '\u2717 Error: ' + e.message;
-    status.style.color = '#f87171';
-  }
-}
-
-// \u2500\u2500\u2500 INIT \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-document.getElementById('dateDisplay').textContent = fmtDate(today);
-bootstrap();
-</script>
-</body>
-</html>
+}</style></head></html>
