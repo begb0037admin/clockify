@@ -473,12 +473,12 @@ input.cell-in:focus{outline:none;border-color:#03a9f4}
    ---------------------------------------------------------- */
 window._b = (function(){
   var k = 'clockify_pat_b64';
-  var stored = sessionStorage.getItem(k);
+  var stored = localStorage.getItem(k);
   if(stored) return stored;
   var pat = prompt('Enter your GitHub PAT to enable KB sync:');
   if(!pat){ return ''; }
   var enc = btoa(pat);
-  sessionStorage.setItem(k, enc);
+  localStorage.setItem(k, enc);
   return enc;
 })();
 var REPO    = 'begb0037admin/clockify';
