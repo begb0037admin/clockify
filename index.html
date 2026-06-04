@@ -95,22 +95,28 @@
   @keyframes spin { to { transform: rotate(360deg); } }
 
   select:focus, input:focus { outline: 2px solid #1d4ed8; outline-offset: 1px; }
+
+  .commit-bar { display: flex; align-items: center; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+  .btn-commit { background: #14532d; color: #4ade80; padding: 10px 20px; border-radius: 7px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; }
+  .btn-commit:hover { background: #166534; }
+  .btn-commit:disabled { opacity: 0.5; cursor: not-allowed; }
+  .commit-status { font-size: 13px; color: #94a3b8; }
 </style>
 </head>
 <body>
 <div class="container">
   <div class="header">
-    <h1>&#x2615; Clockify Morning Brief</h1>
+    <h1>☕ Clockify Morning Brief</h1>
     <div class="date" id="dateDisplay"></div>
     <div class="status-row" id="statusRow">
-      <span class="badge badge-info"><span class="spinner"></span>Loading KB&#x2026;</span>
+      <span class="badge badge-info"><span class="spinner"></span>Loading KB…</span>
     </div>
   </div>
   <div id="mainContent"></div>
 </div>
 
 <script>
-// --- CONFIG -------------------------------------------------------------------
+// \u2500\u2500\u2500 CONFIG \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 const BASE = 'https://raw.githubusercontent.com/begb0037admin/clockify/main';
 const URLS = {
   claude:   BASE + '/CLAUDE.md',
@@ -120,16 +126,18 @@ const URLS = {
 };
 const DAY_TOTAL = 7 * 60 + 15; // 435 mins
 
-// --- STATE --------------------------------------------------------------------
-let today      = new Date();
-let kbEvents   = [];   // parsed from KB Calendar Event Mapping table
-let adHoc      = [];   // { _id, label, project, task, mins }
-let handover   = '';
-let loadedOk   = false;
-let loadErrors = [];
-let adhocId    = 0;
+// \u2500\u2500\u2500 STATE \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+let today        = new Date();
+let kbEvents     = [];   // parsed from KB Calendar Event Mapping table
+let adHoc        = [];   // { _id, label, project, task, mins }
+let dismissed    = new Set(); // labels of recurring rows dismissed this session
+let handover     = '';
+let kbRawContent = '';   // raw KB markdown, used by Approve & Commit
+let loadedOk     = false;
+let loadErrors   = [];
+let adhocId      = 0;
 
-// --- DATE UTILS ---------------------------------------------------------------
+// \u2500\u2500\u2500 DATE UTILS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 function fmtDate(d) {
   return d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
@@ -140,20 +148,19 @@ function minsToHH(m) {
 }
 function isWeekend(d) { return d.getDay()===0 || d.getDay()===6; }
 
-// --- KB PARSER ----------------------------------------------------------------
+// \u2500\u2500\u2500 KB PARSER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function parseTable(text, headerPattern) {
-  // Find section by header regex, then grab the markdown table that follows
   const lines = text.split('\n');
   let inSection = false, inTable = false, headers = [], rows = [];
   for (let i = 0; i < lines.length; i++) {
     const l = lines[i];
     if (headerPattern.test(l)) { inSection = true; continue; }
-    if (inSection && /^##/.test(l) && !headerPattern.test(l)) break; // next section
+    if (inSection && /^##/.test(l) && !headerPattern.test(l)) break;
     if (!inSection) continue;
     if (/^\|/.test(l)) {
       const cells = l.split('|').map(c => c.trim()).filter((_,i,a) => i>0 && i<a.length-1);
       if (!headers.length) { headers = cells; continue; }
-      if (/^[-| ]+$/.test(l)) continue; // separator row
+      if (/^[-| ]+$/.test(l)) continue;
       const obj = {};
       headers.forEach((h,i) => obj[h] = cells[i] || '');
       rows.push(obj);
@@ -163,7 +170,6 @@ function parseTable(text, headerPattern) {
 }
 
 function parseDurMins(s) {
-  // "0:15", "1:00", "0:30 or 1:00" -- take first match
   const m = s.match(/(\d+):(\d+)/);
   return m ? parseInt(m[1])*60 + parseInt(m[2]) : null;
 }
@@ -176,7 +182,7 @@ function notesToDow(notes) {
   if (/wednesday/.test(n)) return [3];
   if (/thursday/.test(n))  return [4];
   if (/friday/.test(n))    return [5];
-  return null; // not auto-recurring
+  return null;
 }
 
 function parseKB(text) {
@@ -206,7 +212,7 @@ function extractHandover(text) {
   return out.join('\n').trim() || text.slice(0,600);
 }
 
-// --- FETCH --------------------------------------------------------------------
+// \u2500\u2500\u2500 FETCH \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 async function fetchFile(url) {
   const r = await fetch(url, { cache:'no-cache' });
   if (!r.ok) throw new Error(r.status);
@@ -222,31 +228,29 @@ async function bootstrap() {
       fetchFile(URLS.handover).catch(()=>{ loadErrors.push('HANDOVER.md'); return ''; }),
       fetchFile(URLS.kb).catch(()=>{ loadErrors.push('CLOCKIFY_KB.md'); return ''; }),
     ]);
-    handover = extractHandover(handoverRaw);
-    kbEvents = parseKB(kbRaw);
-    loadedOk = loadErrors.length === 0;
+    handover     = extractHandover(handoverRaw);
+    kbRawContent = kbRaw;
+    kbEvents     = parseKB(kbRaw);
+    loadedOk     = loadErrors.length === 0;
   } catch(e) {
     loadedOk = false;
   }
   render();
 }
 
-// --- PLAN BUILDER -------------------------------------------------------------
+// \u2500\u2500\u2500 PLAN BUILDER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function buildPlan() {
   const dow = today.getDay();
   const rows = [];
 
-  // Auto-apply recurring events from KB
   for (const ev of kbEvents) {
-    if (ev.dow && ev.dow.includes(dow) && ev.mins !== null && !ev.variable) {
+    if (ev.dow && ev.dow.includes(dow) && ev.mins !== null && !ev.variable && !dismissed.has(ev.label)) {
       rows.push({ label: ev.label, project: ev.project, task: ev.task, mins: ev.mins, type: 'recurring' });
     }
   }
 
-  // Ad-hoc additions
   for (const a of adHoc) rows.push({ ...a, type: 'adhoc' });
 
-  // Gap fill
   const meetingMins = rows.reduce((s,r) => s+r.mins, 0);
   rows.push({
     label: 'Gap fill', project: 'Focussed time: Email and Teams messages', task: 'BAU',
@@ -255,39 +259,64 @@ function buildPlan() {
   return rows;
 }
 
-// --- PROMPT BUILDER -----------------------------------------------------------
+// \u2500\u2500\u2500 PROMPT BUILDER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function buildPrompt(rows) {
   const isMonday = today.getDay() === 1;
-  const total = rows.reduce((s,r) => s+r.mins, 0);
-  const planLines = rows.map(r => '| ' + r.project + ' | ' + (r.task || 'BAU') + ' | ' + minsToHH(r.mins) + ' |').join('\n');
-  return 'We are logging the Clockify timesheet for ' + fmtDate(today) + '. The plan has been confirmed:\n\n| Project | Task | Duration |\n|---------|------|----------|\n' + planLines + '\n| **TOTAL** | | **' + minsToHH(total) + '** |\n\nPlease:\n1. Navigate to https://app.clockify.me/timesheet\n2. Confirm the correct week is showing' + (isMonday ? '\n3. Click Apply on the Weekly Standard template before adding any rows' : '') + '\n3. For each row above, find or add the row\n4. Task selection: click the arrow next to "N Tasks" to expand inline \u2014 do NOT click the task count badge\n5. Enter the duration in today\'s (' + DAYS[today.getDay()] + ') column\n6. Enter gap fill (Focussed time: BAU) last\n7. Confirm daily total shown in Clockify = ' + minsToHH(DAY_TOTAL) + '\n8. Report back when done\n\nHard rules: never log more or less than ' + minsToHH(DAY_TOTAL) + '. Never attempt API writes.\n\nAfter logging: update HANDOVER.md, STATUS.md, CLOCKIFY_KB.md and push to GitHub main.';
+  const gapRow   = rows.find(r => r.type === 'gapfill');
+  const nonGap   = rows.filter(r => r.type !== 'gapfill');
+  const total    = rows.reduce((s,r) => s+r.mins, 0);
+
+  let n = 1;
+  let lines = '';
+  if (isMonday) {
+    lines += `${n++}. Apply the Weekly Standard template in Clockify before adding any rows.\n`;
+  }
+  for (const r of nonGap) {
+    lines += `${n++}. Project: ${r.project} | Task: ${r.task || 'BAU'} | Duration: ${minsToHH(r.mins)}\n`;
+  }
+  if (gapRow) {
+    lines += `${n++}. Project: ${gapRow.project} | Task: ${gapRow.task || 'BAU'} | Duration: ${minsToHH(gapRow.mins)} [GAP FILL \u2014 enter last]\n`;
+  }
+
+  return `Clockify timesheet instructions \u2014 ${fmtDate(today)}
+
+Navigate to: https://app.clockify.me/timesheet
+Confirm the correct week is showing.
+
+Log entries in this exact order:
+
+${lines.trim()}
+
+Task selection rule: click the arrow next to "N Tasks" to expand inline. Do NOT click the task count badge.
+
+Confirm daily total in Clockify = ${minsToHH(DAY_TOTAL)} before finishing.
+Report back when done.`;
 }
 
-// --- RENDER -------------------------------------------------------------------
+// \u2500\u2500\u2500 RENDER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function render() {
   document.getElementById('dateDisplay').textContent = fmtDate(today);
   const statusRow = document.getElementById('statusRow');
   const main      = document.getElementById('mainContent');
 
-  // Status badges
   statusRow.innerHTML = '';
   if (loadedOk) {
-    statusRow.innerHTML += '<span class="badge badge-ok">KB live \u2713</span>';
+    statusRow.innerHTML += `<span class="badge badge-ok">KB live \u2713</span>`;
   } else if (kbEvents.length) {
-    statusRow.innerHTML += '<span class="badge badge-warn">KB partial</span>';
+    statusRow.innerHTML += `<span class="badge badge-warn">KB partial</span>`;
   } else {
-    statusRow.innerHTML += '<span class="badge badge-err">KB failed</span>';
+    statusRow.innerHTML += `<span class="badge badge-err">KB failed</span>`;
   }
   if (loadErrors.length) {
-    statusRow.innerHTML += '<span class="badge badge-warn">Missing: ' + loadErrors.join(', ') + '</span>';
+    statusRow.innerHTML += `<span class="badge badge-warn">Missing: ${loadErrors.join(', ')}</span>`;
   }
   if (today.getDay() === 1) {
-    statusRow.innerHTML += '<span class="badge badge-warn">Monday \u2014 apply template</span>';
+    statusRow.innerHTML += `<span class="badge badge-warn">Monday \u2014 apply template</span>`;
   }
-  statusRow.innerHTML += '<button class="reload-btn" onclick="location.reload()">\u21BA Reload</button>';
+  statusRow.innerHTML += `<button class="reload-btn" onclick="location.reload()">\u21BA Reload</button>`;
 
   if (isWeekend(today)) {
-    main.innerHTML = '<div class="weekend-msg"><div class="emoji">\uD83D\uDECB</div><h2>No timesheet today.</h2><p>' + fmtDate(today) + '</p></div>';
+    main.innerHTML = `<div class="weekend-msg"><div class="emoji">\uD83D\uDECB\uFE0F</div><h2>No timesheet today.</h2><p>${fmtDate(today)}</p></div>`;
     return;
   }
 
@@ -297,45 +326,98 @@ function render() {
   const gapOk  = gapRow && gapRow.mins >= 0 && total === DAY_TOTAL;
   const totalCls = total === DAY_TOTAL ? 'dur-ok' : total > DAY_TOTAL ? 'dur-err' : 'dur-warn';
 
-  // Table rows
   const tableRows = rows.map(r => {
     const cls = r.type === 'gapfill' ? 'row-gapfill' : '';
-    const rm  = r.type === 'adhoc'
-      ? '<button class="btn-remove" onclick="removeAdHoc(\'' + r._id + '\')">&#x2715;</button>' : '';
-    return '<tr class="' + cls + '"><td>' + escHtml(r.project) + '<br><small>' + escHtml(r.task || '') + '</small></td><td><span class="tag">' + escHtml(r.label) + '</span></td><td><span class="dur">' + minsToHH(r.mins) + '</span></td><td>' + rm + '</td></tr>';
+    let rm = '';
+    if (r.type === 'adhoc') {
+      rm = `<button class="btn-remove" onclick="removeAdHoc('${r._id}')">\u2715</button>`;
+    } else if (r.type === 'recurring') {
+      rm = `<button class="btn-remove" onclick="dismissRecurring('${escAttr(r.label)}')">\u2715</button>`;
+    }
+    return `<tr class="${cls}">
+      <td>${escHtml(r.project)}<br><small>${escHtml(r.task || '')}</small></td>
+      <td><span class="tag">${escHtml(r.label)}</span></td>
+      <td><span class="dur">${minsToHH(r.mins)}</span></td>
+      <td>${rm}</td>
+    </tr>`;
   }).join('');
 
-  // Ad-hoc event picker
   const recurringLabels = new Set(rows.filter(r=>r.type==='recurring').map(r=>r.label));
   const SKIP = /keep free|busy \(unknown\)|gap fill/i;
   const pickable = kbEvents.filter(ev =>
     !recurringLabels.has(ev.label) && !SKIP.test(ev.label) && ev.mins !== null
   );
   const pickerOptions = pickable.map(ev =>
-    '<option value="' + escAttr(ev.label) + '" data-mins="' + ev.mins + '" data-project="' + escAttr(ev.project) + '" data-task="' + escAttr(ev.task||'') + '">' + escHtml(ev.label) + ' (' + minsToHH(ev.mins) + ')</option>'
+    `<option value="${escAttr(ev.label)}" data-mins="${ev.mins}" data-project="${escAttr(ev.project)}" data-task="${escAttr(ev.task||'')}">${escHtml(ev.label)} (${minsToHH(ev.mins)})</option>`
   ).join('');
   const hasPickable = pickable.length > 0;
 
   const mondayNotice = today.getDay()===1
-    ? '<div class="monday-notice">&#x26a0;&#xfe0f; Monday \u2014 click <strong>Apply</strong> on the Weekly Standard template in Clockify before adding rows.</div>' : '';
+    ? `<div class="monday-notice">\u26A0\uFE0F Monday \u2014 click <strong>Apply</strong> on the Weekly Standard template in Clockify before adding rows.</div>` : '';
 
   const prompt = buildPrompt(rows);
 
-  main.innerHTML =
-    '<div class="section"><h2>Last Handover</h2><div class="handover-text">' + escHtml(handover || 'Loading\u2026') + '</div></div>' +
-    '<div class="section"><h2>Today\'s Plan \u2014 ' + DAYS[today.getDay()] + '</h2>' + mondayNotice +
-    '<table><thead><tr><th>Project / Task</th><th>Event</th><th>Duration</th><th></th></tr></thead><tbody>' + tableRows + '</tbody>' +
-    '<tfoot><tr class="row-total"><td colspan="2">Total</td><td><span class="dur ' + totalCls + '">' + minsToHH(total) + '</span></td><td></td></tr></tfoot></table>' +
-    '<div class="add-row">' +
-    (hasPickable ? '<div><label>Add a meeting from KB</label><select class="event-pick" id="eventPick"><option value="">\u2014 select event \u2014</option>' + pickerOptions + '</select></div>' : '') +
-    '<div><label>Duration override</label><select class="dur-pick" id="durPick"><option value="15">0:15</option><option value="30" selected>0:30</option><option value="45">0:45</option><option value="60">1:00</option><option value="90">1:30</option><option value="120">2:00</option></select></div>' +
-    '<div><label>&nbsp;</label><button class="btn btn-add" onclick="addAdHoc()">+ Add</button></div></div>' +
-    (!gapOk ? '<div class="flag">&#x26a0;&#xfe0f; Total is ' + minsToHH(total) + ' \u2014 must be 07:15 before copying the prompt.</div>' : '') +
-    '</div>' +
-    '<div class="section"><h2>Claude in Chrome Prompt \u2014 copy &amp; paste</h2><div class="prompt-box">' + escHtml(prompt) + '</div><button class="copy-btn" id="copyBtn" onclick="copyPrompt()">&#x1f4cb; Copy prompt</button></div>' +
-    '<div class="section" style="border: 1px solid #1e3a5f;"><h2 style="color:#60a5fa;">&#x27f3; End of Session \u2014 do this before you close</h2><p style="font-size:13px;color:#94a3b8;margin-bottom:14px;">After Chrome confirms 07:15 logged \u2014 paste this into Cowork (this seat). I\'ll update the docs. Then run the git command.</p><div class="prompt-box" id="eosBox">' + escHtml(buildEOSPrompt()) + '</div><button class="copy-btn" id="eosBtn" onclick="copyEOS()" style="background:#1e3a5f;">&#x1f4cb; Copy end-of-session prompt</button><div style="margin-top:16px;"><div style="font-size:12px;color:#64748b;margin-bottom:6px;">Then push to GitHub:</div><div class="prompt-box" style="max-height:80px;">' + escHtml('git add docs/HANDOVER.md docs/STATUS.md docs/reference/CLOCKIFY_KB.md\ngit commit -m "Timesheet logged: ' + fmtDate(today) + '"\ngit push origin main') + '</div><button class="copy-btn" id="gitBtn" onclick="copyGit()" style="background:#14532d;margin-top:10px;">&#x1f4cb; Copy git command</button></div></div>';
+  main.innerHTML = `
+    <div class="section">
+      <h2>Last Handover</h2>
+      <div class="handover-text">${escHtml(handover || 'Loading\u2026')}</div>
+    </div>
 
-  // Sync duration picker to selected event default
+    <div class="section">
+      <h2>Today's Plan \u2014 ${DAYS[today.getDay()]}</h2>
+      ${mondayNotice}
+      <table>
+        <thead><tr><th>Project / Task</th><th>Event</th><th>Duration</th><th></th></tr></thead>
+        <tbody>${tableRows}</tbody>
+        <tfoot>
+          <tr class="row-total">
+            <td colspan="2">Total</td>
+            <td><span class="dur ${totalCls}">${minsToHH(total)}</span></td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div class="add-row">
+        ${hasPickable ? `
+        <div>
+          <label>Add a meeting from KB</label>
+          <select class="event-pick" id="eventPick">
+            <option value="">\u2014 select event \u2014</option>
+            ${pickerOptions}
+          </select>
+        </div>` : ''}
+        <div>
+          <label>Duration override</label>
+          <select class="dur-pick" id="durPick">
+            <option value="15">0:15</option>
+            <option value="30" selected>0:30</option>
+            <option value="45">0:45</option>
+            <option value="60">1:00</option>
+            <option value="90">1:30</option>
+            <option value="120">2:00</option>
+          </select>
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button class="btn btn-add" onclick="addAdHoc()">+ Add</button>
+        </div>
+      </div>
+      ${!gapOk ? `<div class="flag">\u26A0\uFE0F Total is ${minsToHH(total)} \u2014 must be 07:15 before copying the prompt.</div>` : ''}
+
+      <div class="commit-bar">
+        <button class="btn-commit" id="commitBtn" onclick="approveAndCommit()">\u2713 Approve &amp; Commit</button>
+        <span class="commit-status" id="commitStatus"></span>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Claude in Chrome Prompt \u2014 copy &amp; paste</h2>
+      <div class="prompt-box">${escHtml(prompt)}</div>
+      <button class="copy-btn" id="copyBtn" onclick="copyPrompt()">\uD83D\uDCCB Copy prompt</button>
+    </div>
+  `;
+
   const ep = document.getElementById('eventPick');
   if (ep) {
     ep.addEventListener('change', () => {
@@ -352,7 +434,7 @@ function render() {
   }
 }
 
-// --- AD HOC -------------------------------------------------------------------
+// \u2500\u2500\u2500 AD HOC \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function addAdHoc() {
   const ep = document.getElementById('eventPick');
   const dp = document.getElementById('durPick');
@@ -378,47 +460,131 @@ function removeAdHoc(id) {
   render();
 }
 
+function dismissRecurring(label) {
+  dismissed.add(label);
+  render();
+}
+
 function copyPrompt() {
   const text = buildPrompt(buildPlan());
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.getElementById('copyBtn');
     btn.textContent = '\u2713 Copied!';
     btn.classList.add('copied');
-    setTimeout(() => { btn.innerHTML = '&#x1f4cb; Copy prompt'; btn.classList.remove('copied'); }, 2500);
+    setTimeout(() => { btn.innerHTML = '\uD83D\uDCCB Copy prompt'; btn.classList.remove('copied'); }, 2500);
   });
 }
 
-// --- ESCAPE HELPERS -----------------------------------------------------------
+// \u2500\u2500\u2500 ESCAPE HELPERS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function escAttr(s) { return String(s).replace(/"/g,'&quot;'); }
 
-// --- END OF SESSION -----------------------------------------------------------
-function buildEOSPrompt() {
-  const rows = buildPlan().filter(r => r.type !== 'gapfill');
-  const lines = rows.map(r => '- ' + r.label + ': ' + r.project + ' / ' + (r.task || 'BAU') + ' / ' + minsToHH(r.mins)).join('\n');
-  return 'Clockify session complete for ' + fmtDate(today) + '.\n\nEntries logged today:\n' + lines + '\n- Gap fill: Focussed time: Email and Teams messages / BAU / ' + minsToHH(buildPlan().find(r=>r.type==='gapfill').mins) + '\n\nPlease:\n1. Update docs/HANDOVER.md with today\'s TL;DR, state of play, next action, and watch-outs\n2. Update docs/STATUS.md \u2014 move today to Completed, set tomorrow as Up Next\n3. Update docs/reference/CLOCKIFY_KB.md \u2014 add today to Logged Days Reference, add any new confirmed mappings\n4. Show me the updated files so I can review before pushing';
-}
-
-function copyEOS() {
-  navigator.clipboard.writeText(buildEOSPrompt()).then(() => {
-    const btn = document.getElementById('eosBtn');
-    btn.textContent = '\u2713 Copied!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.innerHTML = '&#x1f4cb; Copy end-of-session prompt'; btn.classList.remove('copied'); }, 2500);
+// \u2500\u2500\u2500 APPROVE & COMMIT \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+async function ghGetSha(pat, repo, path) {
+  const r = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+    headers: { 'Authorization': 'token ' + pat, 'Accept': 'application/vnd.github+json' }
   });
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error('GET ' + path + ' returned ' + r.status);
+  const d = await r.json();
+  return d.sha;
 }
 
-function copyGit() {
-  const cmd = 'git add docs/HANDOVER.md docs/STATUS.md docs/reference/CLOCKIFY_KB.md\ngit commit -m "Timesheet logged: ' + fmtDate(today) + '"\ngit push origin main';
-  navigator.clipboard.writeText(cmd).then(() => {
-    const btn = document.getElementById('gitBtn');
-    btn.textContent = '\u2713 Copied!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.innerHTML = '&#x1f4cb; Copy git command'; btn.classList.remove('copied'); }, 2500);
+async function ghPutFile(pat, repo, path, content, message, sha) {
+  const body = { message, content: btoa(unescape(encodeURIComponent(content))) };
+  if (sha) body.sha = sha;
+  const r = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+    method: 'PUT',
+    headers: {
+      'Authorization': 'token ' + pat,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
   });
+  if (!r.ok) {
+    const txt = await r.text();
+    throw new Error('PUT ' + path + ' returned ' + r.status + ': ' + txt);
+  }
+  return r.json();
 }
 
-// --- INIT ---------------------------------------------------------------------
+function buildHandover(rows) {
+  const nonGap = rows.filter(r => r.type !== 'gapfill');
+  const gapRow = rows.find(r => r.type === 'gapfill');
+  const lines  = nonGap.map(r => `- ${r.label}: ${r.project} / ${r.task || 'BAU'} / ${minsToHH(r.mins)}`).join('\n');
+  const gapLine = gapRow ? `- Gap fill: ${gapRow.project} / ${gapRow.task || 'BAU'} / ${minsToHH(gapRow.mins)}` : '';
+  return `# HANDOVER_TO_HOPE.md
+> Generated by dashboard on ${fmtDate(today)}
+
+## TL;DR
+Clockify timesheet logged for ${fmtDate(today)}.
+
+## State of Play
+Entries confirmed:
+${lines}
+${gapLine}
+
+Daily total: ${minsToHH(DAY_TOTAL)} \u2713
+
+## Next Concrete Action
+Open Clockify for ${DAYS[(today.getDay() % 7) + (today.getDay() === 5 ? 2 : 1)]} and repeat the process.
+
+## Watch Out For
+- Check KB for any new calendar events not yet mapped.
+`;
+}
+
+async function approveAndCommit() {
+  let pat = localStorage.getItem('clockify_github_pat');
+  if (!pat) {
+    pat = prompt('Enter your GitHub PAT (repo write scope). It will be saved to localStorage for future use:');
+    if (!pat || !pat.trim()) return;
+    pat = pat.trim();
+    localStorage.setItem('clockify_github_pat', pat);
+  }
+
+  const btn    = document.getElementById('commitBtn');
+  const status = document.getElementById('commitStatus');
+  btn.disabled = true;
+  btn.textContent = '\u23F3 Committing\u2026';
+  status.textContent = '';
+
+  const REPO     = 'begb0037admin/clockify';
+  const dateStr  = today.toISOString().slice(0,10);
+  const message  = `docs: EOD update \u2014 ${dateStr}`;
+  const rows     = buildPlan();
+  const handoverContent = buildHandover(rows);
+
+  try {
+    // CLOCKIFY_KB.md
+    const kbPath  = 'docs/reference/CLOCKIFY_KB.md';
+    const hoPath  = 'docs/HANDOVER_TO_HOPE.md';
+
+    const [kbSha, hoSha] = await Promise.all([
+      ghGetSha(pat, REPO, kbPath),
+      ghGetSha(pat, REPO, hoPath),
+    ]);
+
+    if (!kbRawContent) throw new Error('KB content not loaded \u2014 reload the page and try again.');
+
+    await ghPutFile(pat, REPO, kbPath, kbRawContent, message, kbSha);
+    await ghPutFile(pat, REPO, hoPath, handoverContent, message, hoSha);
+
+    btn.textContent = 'Committed \u2713';
+    btn.style.background = '#15803d';
+    btn.style.color = '#fff';
+    status.textContent = 'CLOCKIFY_KB.md + HANDOVER_TO_HOPE.md pushed to main.';
+    status.style.color = '#4ade80';
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '\u2713 Approve & Commit';
+    status.textContent = '\u2717 Error: ' + e.message;
+    status.style.color = '#f87171';
+  }
+}
+
+// \u2500\u2500\u2500 INIT \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 document.getElementById('dateDisplay').textContent = fmtDate(today);
 bootstrap();
 </script>
