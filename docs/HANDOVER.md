@@ -1,26 +1,22 @@
-# HANDOVER — 2026-06-03
+# HANDOVER.md
+> Last updated: 2026-06-04 — end of session
 
 ## TL;DR
-
-Wednesday 3 June logged successfully. 6 rows entered (incl. 2 corrections added post-session: Weekly HR Systems Team meeting 00:30 and Business Change: regular catch-up 00:15 for Check in on URL changes ad-hoc); gap fill adjusted to 04:00; daily total confirmed at 07:15.
+Dashboard rebuild complete and live. EOS/Cowork section removed. Approve & Commit button replaces it. Chrome prompt is now a dynamic numbered list. Remove buttons on all rows (session-only dismiss). New process is Seat D (Chrome) logs Clockify, then Approve & Commit pushes KB + handover directly to GitHub.
 
 ## State of Play
+- index.html pushed to main with all new features (unicode-escaped JS, no SyntaxError)
+- CLOCKIFY_KB.md is session 3 version (last logged: Wed 3 Jun 2026)
+- AGENT_MODEL.md updated with new seat roles
+- Thu 4 Jun timesheet: NOT YET LOGGED
 
-- Mon 1 Jun: 7:15 logged ✅
-- - Tue 2 Jun: 7:15 logged ✅
-  - - Wed 3 Jun: 7:15 logged ✅
-    - - Dashboard live on GitHub Pages — KB-driven, updates automatically when KB is pushed
-      - - CLAUDE.md updated with Context Boundary section (work seat / out of scope)
-        - - README.md added to repo
-          - - OQ-01 (Tue 2 Jun Busy blocks) still unresolved
-           
-            - ## Next Concrete Action
-           
-            - Thursday morning: open https://begb0037admin.github.io/clockify/ — the dashboard will build Thursday's plan automatically. Review, copy Chrome prompt, log, then use end-of-session panel to update docs and push.
-           
-            - ## Watch Out For
-           
-            - - Pre-existing entries may be present on the current day before logging begins — always check Wednesday column before entering values; adjust gap fill accordingly
-              - - OQ-01 Busy blocks on Tue 2 Jun still unresolved — ask Kevin if they need to be back-logged
-                - - Task IDs for HR Systems Management Team meeting and HR Systems Management Team: one-to-ones now confirmed (tasks exist in Clockify under Meetings - HR Systems team / Meetings category)
-                  - - Dashboard fetches raw GitHub files — repo must remain public for this to work
+## Next Concrete Action
+1. Open https://begb0037admin.github.io/clockify/ — should load clean with new layout
+2. Confirm: EOS section GONE, "Approve & Commit" button visible below plan table
+3. Log Thursday timesheet via the Chrome prompt → Seat D
+4. After confirming 07:15: click Approve & Commit (will prompt for PAT on first use — use the PAT from MORNING.md)
+
+## Watch Out For
+- First use of Approve & Commit will prompt for PAT in the browser — enter it once, it saves to localStorage
+- 3d (Pull Granola button) not built — Granola MCP endpoint config not known yet, needs Kevin input
+- Thu 4 Jun: FA catchup daily (0:15) auto-shows. Check calendar for anything else.
