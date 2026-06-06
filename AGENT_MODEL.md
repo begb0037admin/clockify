@@ -1,171 +1,249 @@
 # AGENT_MODEL.md
+# Runtime Operating Model
 
-> Which seat does what, where the handoffs are, and who is allowed to
-> write to disk. Read this when you need to know who should be doing
-> what — not what the work is.
+Version : 1.0
+Status  : Ratified
+Updated : 2026-06-06
+Author  : Kevin Lelitte, HR Systems, University of Oxford
 
-This file lives in every project root and in project-os-template/.
-It changes rarely. Per-project state lives in STATUS.md and HANDOVER.md.
-
----
-
-## 1. The Four Seats
-
-### Seat A — Kevin's Chat (Reasoning, Routing, Daily Operations Driver)
-
-- **Where it runs:** Claude.ai chat (Hope or Kevin seat), opened each morning.
-- **What it owns:**
-  * All reasoning, planning, and routing.
-  * Reading Granola via MCP to pull today's meetings.
-  * Reading Outlook inbox via Chrome.
-  * Building the daily Clockify timesheet plan.
-  * Pushing KB updates and HANDOVER files to GitHub via API (PAT from MORNING.md).
-  * Generating inbox briefing and pushing to GitHub Pages via API.
-  * Issuing Chrome commands to Seat D for Clockify entry logging.
-  * Writing COWORK BRIEFs for structural/build work only.
-  * Every daily session starts here.
-- **What it does not own:**
-  * Does not execute browser clicks directly — issues commands to Seat D.
-  * Does not make structural code changes to the dashboard — that is Seat C.
+Governed by: CONSTITUTION.md
+Scope      : All work repositories (begb0037admin)
 
 ---
 
-### Seat B — Kev + VS Code Terminal (Not used in daily ops)
+## Preamble
 
-- **Where it runs:** VS Code integrated terminal.
-- **What it owns:**
-  * Available for one-off script execution if needed.
-- **What it does not own:**
-  * Not part of the daily Clockify workflow.
-  * Not needed unless Seat A specifically dispatches a RUN SCRIPT command.
+This document defines the current implementation of the four-role
+model established in CONSTITUTION.md Section 1. It assigns tools
+and software to roles, defines dispatch mechanics, and records
+platform context.
 
----
+This document changes more frequently than the constitution. When
+the tooling changes, this document is updated. The constitutional
+principles do not change with it.
 
-### Seat C — Cowork (Dashboard Builds and Structural Changes)
-
-- **Where it runs:** Cowork, with file tools and bash shell.
-- **What it owns:**
-  * All structural changes to `index.html` (dashboard builds, feature additions, fixes).
-  * Applying COWORK BRIEFs issued by Seat A.
-  * Git commits and pushes for code changes.
-  * Reporting results back exactly — output verbatim, no editorialising.
-- **What it does not own:**
-  * Not part of daily operations. Called only for build/fix work.
-  * Does not make architectural decisions. Stop and report if something unexpected requires a decision.
-  * Does not validate live UI behaviour — that is Seat D.
-- **Stop-and-report rule:** If anything unexpected is encountered mid-task, stop immediately, report the exact error, and wait. Do not attempt to solve the problem.
-- **Brief format rule:** COWORK BRIEFs contain commands only. No prose lines mixed in.
+If this document conflicts with CONSTITUTION.md, the constitution
+wins. See CONSTITUTION.md Section 6.
 
 ---
 
-### Seat D — Chrome / Claude in Chrome (Clockify Executor)
+## Section 1 — Platform Context
 
-- **Where it runs:** Claude in Chrome extension, against https://app.clockify.me/timesheet
-- **What it owns:**
-  * Executing Clockify timesheet entry clicks on instruction from Seat A.
-  * Confirming 07:15 daily total is reached.
-  * Reporting exactly what it sees — no interpretation.
-- **What it does not own:**
-  * No reasoning or planning — executor only.
-  * No disk read or write.
-  * No terminal, no git, no node.
-  * No code edits.
+Two machines are in scope for work operations.
 
----
+**Work machine (Kevin)**
+Operator : Kevin Lelitte
+OS       : Windows
+Username : begb0037 | Domain: AD-OAK
+Path root: C:\Users\begb0037.AD-OAK\
 
-## 2. Dispatch Language
+**Personal machine (Hope)**
+Operator : Hope (personal domain)
+OS       : macOS
+Scope    : AIMM and personal projects only — out of scope for
+           all work repositories
 
-Every time Seat A finishes reasoning it ends with one of these —
-labelled, ready to act on, no ambiguity about who acts next.
+The paths listed in this section are descriptive runtime context
+only and are not authoritative configuration values.
 
-| Signal | Who acts | Used for |
-|---|---|---|
-| 🔵 RUN SCRIPT | Kev + VS Code | Read-only terminal commands. Run exactly, paste output back. |
-| 🟡 COWORK BRIEF | Cowork via Kev | Write to disk, git operations. Commands only, no prose. |
-| 🔴 CHROME BRIEF | Chrome via Kev | Browser smoke-test. Numbered checklist, specific expected outputs. |
+The two machines do not share a local filesystem. Files stored on
+one machine are not directly accessible from the other.
 
-**Routing rules:**
-- Seat A always goes first. No other seat opens without a dispatch
-  command.
-- One dispatch at a time. Wait for the result before issuing the next.
-- If Cowork reports something unexpected, bring it back to Seat A
-  before issuing any further briefs.
+GitHub is the authoritative source of truth for all governed
+repositories and acts as the shared storage layer between machines.
+Repository content is authoritative; local copies are working
+copies only.
 
----
+A Cowork brief that relies on machine-specific paths, configuration,
+or local files may not execute correctly on the other machine. Any
+brief that touches the local filesystem must make the target machine
+explicit.
 
-## 3. Handoff Triggers
-
-| From | To | Trigger |
-|---|---|---|
-| Seat A | Seat B (RUN SCRIPT) | Need to read disk, run a test, check git state |
-| Seat A | Seat B (COWORK BRIEF) | Edit is fully designed, exact change known |
-| Seat A | Seat B (CHROME BRIEF) | Commit landed, behaviour needs browser verification |
-| Seat C | Seat A (via Kev) | Unexpected finding mid-task |
-| Seat D | Seat A (via Kev) | Defect needs a decision |
-| Seat D | Seat C (via Seat A) | Defect has a mechanical fix |
+Never hardcode machine-specific paths in repository files. Use
+GitHub URLs as the stable reference wherever possible. Scripts that
+require local paths must derive or parameterise them at runtime.
 
 ---
 
-## 4. Cold-Start Order
+## Section 2 — Role Assignments
 
-Every seat, every session, reads in this order:
+The four constitutional roles are currently assigned as follows.
 
-1. `CLAUDE.md` — project identity, rules, what's in and out of scope
-2. `STATUS.md` — current phase and next step
-3. `HANDOVER.md` — what the last session did and what's next
+**Seat A — Reasoning Seat → Claude Chat**
+Thinks, plans, architects, and routes. All sessions begin here.
+Produces all dispatch briefs. Makes all architectural decisions.
+Does not write files. Does not execute commands. Does not operate
+the browser.
 
-That is the entire bootstrap. No fourth file unless HANDOVER.md
-specifically directs it. No human recap required if the handover
-was written correctly.
+**Seat B — Human Seat → Kevin (work) / Hope (personal)**
+Executes read-only terminal commands on instruction from Seat A.
+Pastes output back verbatim without interpretation or modification.
+Human authority is available for oversight, approval, and
+intervention at any point. When invoked, it supersedes all
+in-flight decisions. See CONSTITUTION.md Section 1.
 
-**Cowork cold-start exception:** Cowork receives HANDOVER.md only,
-plus the COWORK BRIEF. It does not receive CLAUDE.md or STATUS.md —
-those invite architectural reasoning Cowork should not be doing.
+**Seat C — Execution Seat → Cowork**
+The sole seat authorised to implement approved changes. Writes
+files to disk, executes bash commands, makes git commits, and
+controls the browser when browser automation is required. Acts
+only on complete, explicit briefs from Seat A. Has no authority
+to make decisions beyond the brief.
 
-**Chrome cold-start exception:** Chrome receives the CHROME BRIEF
-only. No project docs.
+**Seat D — Verification Seat → Chrome (browser)**
+Confirms live behaviour in a running environment. Read-only.
+Reports what it observes. Does not interpret or decide.
 
----
+Verification is requested only when the required answer cannot be
+obtained from reasoning or implementation outputs.
 
-## 5. Rollover and End-of-Session Discipline
-
-**Trigger:** roll at ~70% context. Don't wait for the cap.
-
-**Before any session closes:**
-
-1. Stop new work.
-2. Replace HANDOVER.md — never append. Write: TL;DR, state of play,
-   next concrete action, watch-outs.
-3. Bump STATUS.md — only the lines that changed.
-4. Promote in-flight decisions to ADRs.
-5. Commit everything.
-
-Chat history is disposable. The docs are the memory.
-A HANDOVER.md that grows session over session means durable knowledge
-isn't being promoted. Keep it small.
+Seat D is never the first seat reached in a workflow.
 
 ---
 
-## 6. Disk-Write Authority
+## Section 3 — Dispatch Protocol
 
-**Cowork is the only seat that writes files to disk.**
+Dispatches are issued by Seat A only. Each dispatch targets exactly
+one seat. Dispatches are strictly sequential. Parallel dispatches
+are not permitted. See CONSTITUTION.md Section 2.
 
-No exceptions. If Seat A or Seat D believes a file needs to change,
-the output is a handoff to Seat C — not an edit attempt.
+**Dispatch notation:**
+
+🔵 RUN SCRIPT   → Seat B
+   Read-only terminal command. Kevin runs exactly as given and
+   pastes output back verbatim.
+
+🟡 COWORK BRIEF → Seat C
+   Implementation instruction. Commands only — no prose. Must be
+   fully self-contained with complete context. Cowork has zero
+   assumed knowledge of the current session.
+
+🔴 CHROME BRIEF → Seat D
+   Numbered checklist of browser actions with specific expected
+   outputs at each step. Used only when Seats A and C cannot
+   resolve the verification need.
+
+A brief is complete when the receiving seat requires no
+architectural decisions to carry it out. An incomplete brief is
+a Seat A failure. See CONSTITUTION.md Section 2.
 
 ---
 
-## 7. Quick Reference
+## Section 4 — Cowork Brief Standards
 
-| Seat | Surface | Daily ops? | Role |
-|------|---------|------------|------|
-| A — Kevin's Chat | Claude.ai chat | ✅ Yes — primary driver | Reasoning, Granola, Outlook, GitHub API writes, Chrome dispatch |
-| B — Kev + VS Code | VS Code terminal | ❌ No | Manual script execution only if dispatched |
-| C — Cowork | Cowork + bash | ❌ Not daily — build/fix only | Dashboard builds, structural index.html changes |
-| D — Chrome | Claude in Chrome | ✅ Yes — executor only | Logs Clockify entries on instruction from Seat A |
+Cowork briefs must be self-contained. The following are required
+in every brief:
+
+- **Restore point** — the SHA or file state to return to if the
+  change fails. Must be stated explicitly. See CONSTITUTION.md
+  Section 4.
+- **Target machine** — Windows (work) or macOS (personal).
+  Never assumed.
+- **Complete file paths** — derived from GitHub URLs, never
+  hardcoded local paths.
+- **Exit condition** — a clear statement of what done looks like.
+
+Assumptions are prohibited. Any information required to complete
+the task must be present in the brief.
+
+Large audit or recon output must be written to a file by Cowork,
+not pasted to chat. Seat A reads it surgically on demand via
+targeted fetch.
 
 ---
 
-## Last updated
+## Section 5 — Session Discipline
 
-2026-06-03 — Architecture redesign. Seat A now drives daily ops directly (Granola MCP, Outlook via Chrome, GitHub API). Cowork retired from daily ops — build/fix only. Seat D is executor only.
+These rules apply every session.
+
+1. Large output → Cowork writes to file. Never pasted to chat.
+   Seat A requests specific sections only.
+2. Trigger "prep handover" before any large execution task —
+   not after. Large execution task is determined by operator
+   judgement and includes any task expected to generate substantial
+   output, prolonged execution, or significant context accumulation.
+3. Open a fresh session for any task that starts with a large
+   data load.
+4. After a sustained or complex session, Seat A flags proactively:
+   "This session has been running for a while — should I generate
+   a handover brief now as a precaution?"
+5. No session closes without documentation updated to reflect
+   current state. See CONSTITUTION.md Section 5.
+
+---
+
+## Section 6 — Cross-Domain Model
+
+Two operators share the same GitHub account and tooling.
+
+**Kevin** — work domain. All Oxford HR Systems repositories.
+**Hope**  — personal domain. AIMM and personal projects only.
+
+Domain boundaries are strict. Work context is never carried into
+personal sessions and vice versa. Mixed-domain briefs are not
+valid.
+
+Shared tooling does not create shared authority. Domain separation
+remains in force regardless of platform, repository ownership, or
+account configuration.
+
+When an operator hits a session limit, they generate a handover
+brief and pass it to the other operator. The receiving operator
+works from the brief alone — zero assumed knowledge from the
+sending session. On completion, the receiving operator issues a
+return brief.
+
+The sending operator always generates the handover brief. The
+receiving operator never generates it on their behalf.
+
+If a receiving operator is asked to pick up work without a
+handover brief, the correct response is to request one before
+proceeding.
+
+**Failover chain (work):** Kevin → Hope
+**Failover chain (personal):** Hope → Kevin
+
+---
+
+## Section 7 — GitHub Access
+
+All repositories are hosted under the begb0037admin GitHub
+account. Private repositories are accessed via the GitHub
+Contents API.
+
+URL pattern : https://api.github.com/repos/begb0037admin/
+              {repo}/contents/{path}?ref=main
+Auth header : Authorization: token {PAT}
+
+Authentication secrets are held outside repository files and are
+never committed. When credentials are rotated, both operator
+preferences must be updated on the same day.
+
+---
+
+## Section 8 — Repository Scope
+
+The following repositories are currently governed by this model.
+This table reflects current governance scope and may change
+without constitutional amendment.
+
+| Repository           | Status         | Notes                    |
+|----------------------|----------------|--------------------------|
+| clockify             | Active         | Gold standard / template |
+| hris-dashboard       | Active         | Complex — handle last    |
+| hr-fa-knowledge-base | Active         |                          |
+| work-inbox           | Active         |                          |
+| meeting-records      | Active         |                          |
+| hr-projects          | Active         |                          |
+| desktop-tutorial     | Decommissioned | Deletion pending         |
+| aimm                 | Out of scope   | Personal domain — Hope   |
+| personal-finance     | Out of scope   | Personal domain — Hope   |
+
+---
+
+## Version History
+
+| Version | Date       | Change                              |
+|---------|------------|-------------------------------------|
+| 1.0     | 2026-06-06 | Initial ratification. Amendments    |
+|         |            | applied from governance review:     |
+|         |            | Sections 1, 2, 3, 4, 5, 6, 7, 8.   |
