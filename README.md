@@ -6,6 +6,7 @@ Paste any URL below directly into Claude chat to load project context:
 |---|---|
 | `CLAUDE.md` | https://raw.githubusercontent.com/begb0037admin/clockify/main/CLAUDE.md |
 | `docs/reference/CLOCKIFY_KB.md` | https://raw.githubusercontent.com/begb0037admin/clockify/main/docs/reference/CLOCKIFY_KB.md |
+| `C:\temp\governance\RESTORE_SHAS_20260606_231718.txt` | Governance rollback log - pre-commit SHAs for all 6 repos (local) |
 | `docs/STATUS.md` | https://raw.githubusercontent.com/begb0037admin/clockify/main/docs/STATUS.md |
 | `docs/HANDOVER.md` | https://raw.githubusercontent.com/begb0037admin/clockify/main/docs/HANDOVER.md |
 
@@ -41,6 +42,7 @@ Opens each morning as a browser dashboard. Fetches the latest KB from GitHub, bu
 | `docs/STATUS.md` | Current project state |
 | `docs/HANDOVER.md` | Latest session handover note |
 | `docs/reference/CLOCKIFY_KB.md` | Living knowledge base — project/task mappings |
+| `C:\temp\governance\RESTORE_SHAS_20260606_231718.txt` | Governance rollback log - pre-commit SHAs for all 6 repos (local) |
 
 ## Hard rules
 
