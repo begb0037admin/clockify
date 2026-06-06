@@ -1,4 +1,4 @@
-# CLAUDE.md — Clockify
+# CLAUDE.md â Clockify
 > AI bootstrap entry point. Read this first.
 > Keep this file under 200 lines. Push details to linked docs.
 
@@ -7,13 +7,13 @@
 - **Purpose:** AI-assisted Clockify Timesheet logging for Kevin Lelitte, HR Systems, University of Oxford.
 - **Owner:** Kevin Lelitte, Manager/Director HR Systems
 - **Status:** Active
-- **Path:** C:\Users\begb0037.AD-OAK\Work Folders\Documents\Claude\Projects\Clockify\
+- **Path:** https://github.com/begb0037admin/clockify
 
 ## Bootstrap Order
 1. This file (orientation)
 2. `docs/STATUS.md` (current state)
 3. `docs/HANDOVER.md` (latest session note)
-4. `docs/reference/CLOCKIFY_KB.md` (knowledge base — read for ANY Clockify task)
+4. `docs/reference/CLOCKIFY_KB.md` (knowledge base â read for ANY Clockify task)
 5. Read other docs on demand only.
 
 Do NOT ask Kevin for a recap. The docs above are the recap.
@@ -33,7 +33,7 @@ Do NOT attempt Clockify API writes. Kevin's Oxford SSO account cannot authentica
 | Rollover procedure | `ROLLOVER_SOP.md` |
 
 ## Conventions
-- Timesheet UI only — no API writes (SSO blocker, confirmed 1 Jun 2026)
+- Timesheet UI only â no API writes (SSO blocker, confirmed 1 Jun 2026)
 - Duration format: HH:MM (e.g. 01:00, 00:15)
 - Working day = 7:15 total. Gap fill always = Focussed time: Email and Teams messages (BAU)
 - Calendar sync: Outlook to Clockify auto-populates Calendar view. Timesheet is the manual logging layer on top.
@@ -47,18 +47,18 @@ Do NOT attempt Clockify API writes. Kevin's Oxford SSO account cannot authentica
 - Always update HANDOVER.md at end of session
 
 ## Out of Scope
-- Clockify API automation (SSO blocker — do not re-investigate)
+- Clockify API automation (SSO blocker â do not re-investigate)
 - Mobile or non-Chrome browser automation
 - Modifying Clockify project/task structure (read only)
 
 ## Glossary
-- **Gap fill** — Remaining hours after meetings logged, assigned to Focussed time: Email and Teams messages (BAU)
-- **Weekly Standard** — Saved Clockify template with 4 standard rows. Apply on Mondays only.
-- **Busy block** — Outlook calendar event synced as "Busy" with no title. Mapping must be confirmed with Kevin.
-- **KB** — CLOCKIFY_KB.md, the living knowledge base for this project.
+- **Gap fill** â Remaining hours after meetings logged, assigned to Focussed time: Email and Teams messages (BAU)
+- **Weekly Standard** â Saved Clockify template with 4 standard rows. Apply on Mondays only.
+- **Busy block** â Outlook calendar event synced as "Busy" with no title. Mapping must be confirmed with Kevin.
+- **KB** â CLOCKIFY_KB.md, the living knowledge base for this project.
 
 ## AI Collaboration Notes
-- Preferred style: direct, concise. Kevin is tech-savvy — no hand-holding.
+- Preferred style: direct, concise. Kevin is tech-savvy â no hand-holding.
 - Chrome extension BEGB0037 is available for browser automation.
 - Seat model: follow AGENT_MODEL.md. Seat A reasons. Cowork writes to disk.
 - Update CLOCKIFY_KB.md whenever a new mapping is confirmed mid-session.
