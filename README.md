@@ -1,3 +1,16 @@
+## Claude Quick Load
+
+Paste any URL below directly into Claude chat to load project context:
+
+| File | Raw URL |
+|---|---|
+| `CLAUDE.md` | https://raw.githubusercontent.com/begb0037admin/clockify/main/CLAUDE.md |
+| `docs/reference/CLOCKIFY_KB.md` | https://raw.githubusercontent.com/begb0037admin/clockify/main/docs/reference/CLOCKIFY_KB.md |
+| `docs/STATUS.md` | https://raw.githubusercontent.com/begb0037admin/clockify/main/docs/STATUS.md |
+| `docs/HANDOVER.md` | https://raw.githubusercontent.com/begb0037admin/clockify/main/docs/HANDOVER.md |
+
+---
+
 # Clockify Morning Dashboard
 
 AI-assisted Clockify timesheet logging for Kevin Lelitte, HR Systems, University of Oxford.
