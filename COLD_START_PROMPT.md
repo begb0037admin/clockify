@@ -1,4 +1,4 @@
-# COLD START PROMPT — Clockify
+# COLD START PROMPT â Clockify
 # Paste this as your opening message in a new session.
 
 Good morning. We are continuing the Clockify project.
@@ -10,7 +10,7 @@ Please read the following files in order before doing anything else:
 4. docs/reference/CLOCKIFY_KB.md
 
 These files are in:
-C:\Users\begb0037.AD-OAK\Work Folders\Documents\Claude\Projects\Clockify\
+https://github.com/begb0037admin/clockify
 
 Once you have read them, tell me:
 - What days still need logging this week
