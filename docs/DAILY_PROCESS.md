@@ -5,7 +5,7 @@
 ---
 
 ## The One-Line Summary
-Each morning, Claude reads Kevin's calendar from `work-inbox/data/briefing.json`, maps meetings to Clockify, and reports back a ready-to-log timesheet. Kevin logs it in the Clockify UI. Done in under 60 seconds.
+Each morning, Claude reads Kevin's calendar, maps meetings to Clockify, and reports back a ready-to-log timesheet. Kevin logs it in the Clockify UI. Done in under 60 seconds.
 
 ---
 
@@ -16,70 +16,100 @@ Kevin says: "clockify" (or any variation — "do my clockify", "timesheet", etc.
 
 ## What Claude Does (in order)
 
-1. **Read calendar** — fetch `begb0037admin/work-inbox/data/briefing.json` → read `calToday`
-2. **Check phased return target** — read current daily hour target from `CLOCKIFY_KB.md` (currently 4:00)
-3. **Map meetings** — cross-reference each calendar event against the mapping table in `CLOCKIFY_KB.md`
-4. **Calculate BAU** — target minus sum of mapped meeting durations
-5. **Report back** — present a clean table: Project | Task | Duration. Show daily total = target.
-6. **Wait for Kevin to confirm** — do not log anything; Kevin logs via Clockify UI
-7. **Update KB** — if any new meeting type appears, ask Kevin for the Clockify mapping and add it to `CLOCKIFY_KB.md`
+### 1. Check briefing.json freshness
+Fetch `begb0037admin/work-inbox/data/briefing.json` → check `refreshed_at`.
+
+**If stale (over 24 hours old):**
+> "Your inbox briefing is stale (last refreshed [date/time]). Run `fetch_inbox.py` on your admin machine first, then come back and say 'clockify' again."
+
+**Stop here. Do not proceed until Kevin confirms it has been refreshed.**
+
+### 2. Read today's calendar
+Read `calToday` from briefing.json for today's meetings.
+
+**If briefing.json is fresh but calToday is empty or sparse:** fall back to Granola — list today's meetings and use those instead. Flag to Kevin that the calendar fell back to Granola.
+
+### 3. Cross-reference with Granola
+Pull today's meetings from Granola. Use this to:
+- Confirm meeting durations
+- Catch any meetings not showing in calToday
+- Resolve any ambiguity (e.g. notes saved today from a previous day's meeting)
+
+### 4. Check Command Centre tasks
+Read `begb0037admin/command-centre/data/tasks.json` → Today tier.
+
+If any task maps to a specific funded Clockify project (not BAU), include it in the timesheet. Otherwise tasks stay in gap fill.
+
+### 5. Check phased return target
+Current daily target: **4:00** (phased return, 9am–1pm).
+
+Check `calFull` in briefing.json for block-out events — these indicate when phased return hours change week by week. If a change is detected, confirm with Kevin and update KB.
+
+### 6. Calculate BAU
+`BAU = daily target minus total meeting duration`
+
+| Situation | Action |
+|-----------|--------|
+| Meetings total < target | BAU = target minus meetings |
+| Meetings total = target | BAU = 0 |
+| Meetings total > target | BAU = 0, log meetings only |
+
+### 7. Report back
+
+Present the table and wait. Do not proceed further.
+
+> **Clockify — [Day Date]**
+>
+> | Project | Task | Duration |
+> |---------|------|----------|
+> | [meetings...] | | |
+> | Focussed time: Email and Teams messages | BAU | X:XX |
+> | **Total** | | **4:00** |
+>
+> ⚠️ *Check what's already logged in Clockify today before entering — adjust BAU accordingly.*
+
+### 8. Handle unknowns
+If any meeting in calToday or Granola has no KB mapping:
+> "Unknown meeting — [title]. What Clockify project/task?"
+Kevin confirms once → add to KB → all future occurrences mapped automatically.
 
 ---
 
 ## What Kevin Does
 
 1. Open https://app.clockify.me/timesheet
-2. Check the table Claude provided
-3. Enter/adjust the "Focussed time: Email and Teams messages — BAU" row to match the gap fill number
+2. Check what's already logged for today
+3. Enter/adjust entries to match Claude's table
 4. Done
 
 ---
 
 ## Data Sources
 
-| Source | What it provides |
-|--------|-----------------|
-| `begb0037admin/work-inbox/data/briefing.json` → `calToday` | Today's calendar events (Outlook-synced, updated 6x daily Mon–Fri) |
-| `begb0037admin/clockify/docs/reference/CLOCKIFY_KB.md` | Project/task mappings, current daily target |
-| Granola | Meeting detail and duration if needed for context |
+| Source | What it provides | Fallback |
+|--------|-----------------|---------|
+| `work-inbox/data/briefing.json → calToday` | Today's calendar (Outlook-synced, 6x daily Mon–Fri) | Granola if stale or empty |
+| Granola | Meeting detail, duration confirmation | — |
+| `command-centre/data/tasks.json` | Today tier tasks — any funded project work | — |
+| `clockify/docs/reference/CLOCKIFY_KB.md` | Project/task mappings, daily target | — |
 
 ---
 
-## Current Daily Target
+## Known Gaps in the Process
 
-**4:00** — phased return (9am–1pm). Confirmed 2026-06-26.
-
-When phased return ends, revert to **7:15**. Update `CLOCKIFY_KB.md` Working Day Rule when this changes.
-
-Kevin's calendar shows block-out events at end of day indicating phased return hours each week. Claude reads these from `calFull` in `briefing.json` to track when the target steps up.
-
----
-
-## Gap Fill Rule
-
-| Situation | Action |
-|-----------|--------|
-| Meetings total < target | BAU = target minus meetings total |
-| Meetings total = target | BAU = 0 |
-| Meetings total > target | BAU = 0, log meetings only |
-
----
-
-## When a New Meeting Type Appears
-
-1. Claude flags it: "Unknown meeting — [title]. What Clockify project/task?"
-2. Kevin confirms once
-3. Claude adds to `CLOCKIFY_KB.md` Calendar Event Mapping table
-4. All future occurrences mapped automatically
+| Gap | Impact | Mitigation |
+|----|--------|-----------|
+| briefing.json not refreshed (machine off) | calToday is stale | Stale check at step 1 — stop and prompt Kevin to run fetch_inbox.py |
+| HR Systems Roadmap not always in Granola (no notes taken) | Meeting missed | KB rule: every Friday 1:00 — included by default |
+| Clockify pre-existing entries not visible to Claude | BAU may be wrong | Always remind Kevin to check before logging |
 
 ---
 
 ## Phased Return — Tracking Hours
 
-The daily target changes as Kevin's phased return steps up week by week. Claude tracks this by:
-- Reading block-out events in `briefing.json → calFull`
-- Kevin confirming when the target changes
-- Claude updating `CLOCKIFY_KB.md` Working Day Rule immediately
+Daily target changes as Kevin's phased return steps up. Claude tracks via block-out events in `calFull`. Kevin confirms → KB updated immediately.
+
+Current target: **4:00/day**. Full day: **7:15**.
 
 ---
 
