@@ -1,22 +1,29 @@
 # HANDOVER.md
-> Last updated: 2026-06-04 — end of session
+> Last updated: 2026-06-26
 
 ## TL;DR
-Dashboard rebuild complete and live. EOS/Cowork section removed. Approve & Commit button replaces it. Chrome prompt is now a dynamic numbered list. Remove buttons on all rows (session-only dismiss). New process is Seat D (Chrome) logs Clockify, then Approve & Commit pushes KB + handover directly to GitHub.
+Daily Clockify process established. Claude reads `work-inbox/data/briefing.json → calToday` each morning, maps meetings to Clockify via KB, reports a ready-to-log table. Kevin enters it in the Clockify UI. 60 seconds per day.
 
 ## State of Play
-- index.html pushed to main with all new features (unicode-escaped JS, no SyntaxError)
-- CLOCKIFY_KB.md is session 3 version (last logged: Wed 3 Jun 2026)
-- AGENT_MODEL.md updated with new seat roles
-- Thu 4 Jun timesheet: NOT YET LOGGED
+- Daily process documented in `docs/DAILY_PROCESS.md`
+- `CLOCKIFY_KB.md` updated 2026-06-26: phased return 4:00/day cap, HR Systems Roadmap (Fri 1:00) added
+- Phased return active: 9am–1pm = 4:00/day target
+- Gap period 4 Jun – 25 Jun: logged as 4:00 BAU per day (phased return, back-filled)
+- Previous dashboard/Chrome extension approach abandoned — not sustainable
 
 ## Next Concrete Action
-1. Open https://begb0037admin.github.io/clockify/ — should load clean with new layout
-2. Confirm: EOS section GONE, "Approve & Commit" button visible below plan table
-3. Log Thursday timesheet via the Chrome prompt → Seat D
-4. After confirming 07:15: click Approve & Commit (will prompt for PAT on first use — use the PAT from MORNING.md)
+Each morning Kevin says "clockify" → Claude reads briefing.json calToday → reports table → Kevin logs in UI.
+
+## Data Sources
+- Calendar: `begb0037admin/work-inbox/data/briefing.json` → `calToday`
+- Mapping: `docs/reference/CLOCKIFY_KB.md`
+- Process: `docs/DAILY_PROCESS.md`
 
 ## Watch Out For
-- First use of Approve & Commit will prompt for PAT in the browser — enter it once, it saves to localStorage
-- 3d (Pull Granola button) not built — Granola MCP endpoint config not known yet, needs Kevin input
-- Thu 4 Jun: FA catchup daily (0:15) auto-shows. Check calendar for anything else.
+- `briefing.json` refreshes 6x daily Mon–Fri (7am/9am/11am/1pm/3pm/5pm). If stale (>24hrs), warn Kevin before using.
+- Phased return target changes week by week — track via block-out events in `calFull`. Update KB when it changes.
+- Pre-existing entries may already be in Clockify for the current day — always check before logging; adjust BAU accordingly.
+- HR Systems Roadmap task name in Clockify not yet confirmed in KB — flagged for Kevin to verify next Friday.
+
+## Open Questions
+- OQ-01: Busy blocks Tue 2 Jun still unresolved (low priority — back period already filled)
