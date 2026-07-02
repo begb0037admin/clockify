@@ -45,6 +45,7 @@ Do NOT attempt Clockify API writes. Kevin's Oxford SSO account cannot authentica
 - Always read CLOCKIFY_KB.md before touching the Timesheet
 - Always update CLOCKIFY_KB.md when a new project/task mapping is confirmed
 - Always update HANDOVER.md at end of session
+- All mockups and visual designs are produced as Claude Artifacts — never committed to the repository (see CONSTITUTION.md Section 11)
 
 ## Out of Scope
 - Clockify API automation (SSO blocker — do not re-investigate)
