@@ -64,5 +64,8 @@ Do NOT attempt Clockify API writes. Kevin's Oxford SSO account cannot authentica
 - Seat model: follow AGENT_MODEL.md. Seat A reasons. Cowork writes to disk.
 - Update CLOCKIFY_KB.md whenever a new mapping is confirmed mid-session.
 
+## Global Roadmap
+Cross-repo backlog: `begb0037admin/command-centre/ROADMAP.md`. When told to "update the Global Roadmap", write to that file — not any per-repo roadmap. (Note: `docs/ROADMAP.md` in this repo tracks Clockify-specific items only.)
+
 ## Branch and Merge Protocol
 Always push directly to main. If a branch must be used, merge it to main immediately upon completion — never leave files on a branch.
