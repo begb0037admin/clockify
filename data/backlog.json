@@ -3,15 +3,16 @@
   "items": [
     {
       "id": "meet-01",
-      "title": "No persistent cross-brief item registry -- items drafted for one brief never propagate to others",
+      "title": "TOP PRIORITY -- No persistent cross-brief item registry -- items drafted for one brief never propagate to others",
       "area": "Meetings",
       "type": "gap",
       "severity": "high",
+      "priority": "top",
       "found_by": "Drew",
       "found_date": "2026-08-21",
       "status": "open",
-      "recommendation": "Build a shared item registry with a last-verified date per item, and a pre-finish check that scans every other brief's item set for anything that should also appear.",
-      "source": "meeting-records tools/speaking-briefs/PIPELINE_RELIABILITY_REVIEW.md, commit a28ac0d"
+      "recommendation": "Kevin has confirmed this is his top priority (\"meetings play 80% of my day-to-day work\"). Dedicated review session booked: Sat 22 Aug 2026, 10:00 AM. Build a shared item registry with a last-verified date per item, and a pre-finish check that scans every other brief's item set for anything that should also appear. See meeting-records 'Meeting Pipeline Review - Handover' for full context.",
+      "source": "meeting-records tools/speaking-briefs/PIPELINE_RELIABILITY_REVIEW.md, commit a28ac0d; review booked 21 Aug 2026"
     },
     {
       "id": "meet-02",
