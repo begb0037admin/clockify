@@ -19,10 +19,16 @@
 
 **Resolved during this build:** see "Repo history" above — the `hr-work-roadmap` vs `kevin-work-hub` question is closed, `kevin-work-hub` is the answer, verified directly.
 
+**Confirmed live, same session:**
+- GitHub Pages enabled on this repo already (inherited from the pre-rename `clockify` config), build polled to `built`, live URL verified serving both `index.html` (200, after one transient 503 CDN-propagation retry — known gotcha, see agent-commons) and the real `data/roadmap.json` content.
+- Live URL: https://begb0037admin.github.io/kevin-work-hub/
+- Real-page Playwright screenshot taken against the live URL (not just the local test server) — layout, status colours, all 5 pillars confirmed rendering correctly against real data.
+- `Work Roadmap.url` Desktop shortcut (pointing at the live URL) written and verified on both of this machine's confirmed-real Desktop folders (`D:\OneDrive - lelitte.com\Desktop` and `C:\Users\admin\OneDrive - Nexus365\Desktop`), matching the existing `.url`-shortcut convention already in use there for other dashboards (`dangerouslyDisableSandbox:true` used for both write and verification, per the known sandboxed-write gotcha).
+
 **Not yet done:**
-- GitHub Pages not yet confirmed enabled/live for this repo.
-- Screenshot not yet sent to Kevin — UI approval gate (same as command-centre's) applies before this goes further or gets treated as final.
+- Kevin has not yet seen or approved this. UI approval gate (same as command-centre's) applies — this is v1 for reaction, not final, until he says "approved."
 - No automation yet — `build_roadmap.py` is run-by-hand only. Task Scheduler wiring is a deliberate v2 decision, not v1 scope.
 - Meetings/Knowledge Base sections are point-in-time encodings of tonight's sweeps, not live-refreshing — next refresh needs a fresh SendMessage sweep from Lauren/Adam, not a re-scrape by Drew.
+- `begb0037admin/hr-work-roadmap` (the original, now-superseded repo) is still sitting empty on GitHub — flagged to Kevin/Lauren for a delete-or-leave call, not deleted unilaterally.
 
-**Next action:** Screenshot the rendered dashboard, send to Kevin via the coordinator, wait for his literal "approved" before treating this as done or wiring any automation.
+**Next action:** Kevin reviews the live dashboard/screenshot (relayed via Lauren). On his literal "approved," close this out as v1-confirmed; if he wants changes, iterate before touching automation.
