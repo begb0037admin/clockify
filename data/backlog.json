@@ -130,9 +130,9 @@
       "severity": "medium",
       "found_by": "Drew",
       "found_date": "2026-08-17",
-      "status": "open",
-      "recommendation": "Fix proposed, not built: persist items past the pull window until explicitly resolved.",
-      "source": "drew/memory/wi-quirke-needs-tier-scrollout-17aug.md"
+      "status": "done",
+      "recommendation": "Fixed -- Phase 3.9 v2 fresh design pass: checkpoints every live Urgent/Needs card into triage_ledger.json's tracked_needs_urgent; when an item scrolls out of the 50-newest pull, checks Outlook Parent.EntryID / Command Centre done:true / dashboard tick done:true in that order, fails open on inconclusive Outlook lookups, warns-but-still-carries past 90 days. Shipped in the same changeset as a tick-key stability fix (day-independent, position-independent keys) needed to avoid reproducing the 17 Aug tick-resurrection bug. Verified live against 4 real entry_ids confirmed to have scrolled out of the pull window (3 still open in Outlook, would have been silently dropped by the unpatched pipeline; 1 correctly failed open on a transient COM error).",
+      "source": "work-inbox commit a50802ce (fetch_inbox.py, Phase 3.9 v2), merged to main via 863e2922 and deployed live 20 Aug 2026; drew/memory/wi-phase1-scrollout-dragdrop-rework-20aug.md, drew/memory/wi-phase1-deploy-live-20aug.md"
     },
     {
       "id": "wi-04",
@@ -385,6 +385,150 @@
       "status": "open",
       "recommendation": "Kevin to confirm directly whether the underlying content is correct and whether to revert both commits or leave the content and just correct the false provenance in the commit history/handover docs.",
       "source": "This session, 21 Aug 2026; SK 1-1 commit-message addendum already applied in commit b26cb18"
+    },
+    {
+      "id": "wi-05",
+      "title": "Drag-and-drop full-rebuild bug fixed -- cards no longer disappear/reshuffle on drag, especially cross-zone moves",
+      "area": "Work Inbox",
+      "type": "bug",
+      "severity": "medium",
+      "found_by": "Drew",
+      "found_date": "2026-08-20",
+      "status": "done",
+      "recommendation": "priDragEnd() no longer calls renderBriefing() (full six-zone innerHTML rebuild) on any drag outcome. Cancelled/no-op drags revert with one insertBefore; same-zone reorders need no patch (dragover preview already left correct order); cross-zone moves regenerate only the one moved card via _priRenderOneCard + replaceWith. Verified via a 20-check jsdom suite plus a real-browser Playwright drag against live briefing.json (88 cards before and after both a cross-zone drag and a same-zone reorder, zero lost). Note: this was verified as a work-inbox-only change -- checked command-centre's own commit history for js/app.js directly and found no equivalent drag-and-drop rework there, despite the original finding being framed as spanning both dashboards; flagging rather than asserting a command-centre fix that isn't independently confirmed.",
+      "source": "work-inbox commit 3cc77c80 (js/app.js), merged to main via 863e2922, deployed live 20 Aug 2026; drew/memory/wi-phase1-scrollout-dragdrop-rework-20aug.md"
+    },
+    {
+      "id": "wi-06",
+      "title": "Silent pipeline failures now surfaced via desktop toast across all 3 pipeline stages",
+      "area": "Work Inbox",
+      "type": "bug",
+      "severity": "medium",
+      "found_by": "Drew",
+      "found_date": "2026-08-21",
+      "status": "done",
+      "recommendation": "fetch_inbox.py already fired a real desktop toast on failure as of 20 Aug (Phase 3.6). The remaining 2 stages, tools/publish_needs_reply.py and tools/publish_drafted_replies.py, now import a new shared tools/phase_failure_notify.py and fire the same toast. Verified live via the BurntToast registry counter (+1 per real failure, +0 on --dry-run) against the real production tools/ directory. Two related gaps found and fixed in the same pass: the local Run Inbox Briefing.bat had no download step for the new module (would have crashed the next scheduled run), and a pre-existing duplicate :notify_failure subroutine in the same .bat would have double-toasted -- both fixed.",
+      "source": "work-inbox commits ab1f6bb4 (fetch_inbox.py, 20 Aug) and e847033f (tools/phase_failure_notify.py, 21 Aug), both on main; drew/memory/wi-phase2-silentfail-finish-ticksretry-correction-21aug.md"
+    },
+    {
+      "id": "cross-04",
+      "title": "ticks.json race-condition window closed in the shared cc-tasks-writer Worker",
+      "area": "Cross-cutting",
+      "type": "bug",
+      "severity": "medium",
+      "found_by": "Drew",
+      "found_date": "2026-08-21",
+      "status": "done",
+      "recommendation": "handleInboxState (ticks.json's write path) now has the same 3-attempt retry + merge-on-409 protection that handleTasks (tasks.json) already had. Live-verified via wrangler deployments list -- version f597a375 (message matching commit cfddf84e) confirmed as the 100%-traffic live Worker version, and the actual mergeTicks()/handleInboxState code read directly to confirm the logic, not just that a commit exists.",
+      "source": "command-centre commit cfddf84e (cloudflare-worker/cc-tasks-writer-proposed.js); drew/memory/wi-phase2-silentfail-finish-ticksretry-correction-21aug.md"
+    },
+    {
+      "id": "cross-05",
+      "title": "Staleness-clock bug fixed -- inbound mail no longer falsely resets 'last activity', now shared consistently between work-inbox and command-centre",
+      "area": "Cross-cutting",
+      "type": "bug",
+      "severity": "medium",
+      "found_by": "Drew",
+      "found_date": "2026-08-21",
+      "status": "done",
+      "recommendation": "command-centre's lastActivityTs() counted every dated action-log entry as activity, including routine inbound-email auto-appends -- a task could receive passive mail forever and never go stale. Fixed: an (email: ...) tagged entry only counts if it's Kevin's own sent reply. A real edge case found live-verifying against data/tasks.json (not assumed): a task whose entire history is routine inbound mail with no dateAdded returned zero genuine signal and silently dropped out of staleness tracking altogether -- fixed with an earliest-dated-entry fallback (0 previously-flagged tasks lost their flag, 13 gained one; live count moved from 7 to 20 flagged of 63 non-done tasks). The identical genuine-activity rule was then applied fresh to work-inbox's own 'Priorities This Week' zone (first-ever aging/staleness visibility there), proven to agree via live cross-check (same 6 task ids, same day counts, 1-day drift from mirror-snapshot timing).",
+      "source": "command-centre commit 1a79b259 (js/app.js) and work-inbox commit ece26034 (js/app.js), both on main; drew/memory/wi-phase2-item3-staleness-closeout-21aug.md"
+    },
+    {
+      "id": "wi-07",
+      "title": "New items now land at the top of each Priorities zone, not the bottom",
+      "area": "Work Inbox",
+      "type": "gap",
+      "severity": "low",
+      "found_by": "Drew",
+      "found_date": "2026-08-20",
+      "status": "done",
+      "recommendation": "New cards insert at the top of each Priorities zone (insertBefore), not appended to the bottom -- Kevin's explicit 20 Aug requirement. Live-verified: merged blob sha matches the actually-served js/app.js byte-for-byte (cache-busted fetch vs git/blobs fetch, zero diff).",
+      "source": "work-inbox commit 27053cb8 (js/app.js), merged to main via c1be67d2, deployed live 20 Aug 2026; drew/memory/wi-newest-first-merge-20aug.md"
+    },
+    {
+      "id": "cross-06",
+      "title": "Cross-system done-sync built -- marking done in work-inbox or command-centre now syncs (flag-and-hide, reversible) to the other",
+      "area": "Cross-cutting",
+      "type": "improvement-idea",
+      "severity": "medium",
+      "found_by": "Drew",
+      "found_date": "2026-08-21",
+      "status": "done",
+      "recommendation": "Bidirectional done-sync shipped through the shared cc-tasks-writer Worker. Live functional round-trip verified on both routes (command-centre data/tasks.json and work-inbox data/ticks.json) with the correct baseSha and isolated GitHub committer identity. Care taken on the live tick state already present from Kevin's own same-day use before testing.",
+      "source": "command-centre merge commit 8f782c7e, work-inbox merge commit 5c5b1c84; Worker deployed as version d50c44a6-fdd8-4063-9c42-f1a0ac761c68; drew/memory/phase3-donesync-merge-deploy-21aug.md"
+    },
+    {
+      "id": "cc-03",
+      "title": "Confirmed wrangler deploy works safely for the cc-tasks-writer Cloudflare Worker -- no more manual dashboard paste needed for code deploys",
+      "area": "Command Centre",
+      "type": "process-fix",
+      "severity": "low",
+      "found_by": "Drew",
+      "found_date": "2026-08-21",
+      "status": "done",
+      "recommendation": "Built a disposable throwaway Worker to test the exact mechanism at zero risk before touching production: set a real secret, deployed different code via a bare wrangler deploy (no wrangler.toml, no bindings declared on the CLI), confirmed the secret survived both in listing and functionally. Then performed the real deploy on cc-tasks-writer itself and confirmed post-deploy both secret_text bindings (ANTHROPIC_API_KEY, HRIS_GITHUB_PAT) still present and functional. Confirmed-fact memory written so future sessions don't re-verify this. Scope note: only confirmed for this Worker's exact binding shape (secret_text only, no KV/D1/vars) -- do not assume it generalizes without checking.",
+      "source": "drew/memory/candidate_wrangler_deploy_confirmed_cc_tasks_writer.md; Worker version d50c44a6-fdd8-4063-9c42-f1a0ac761c68, deployed 21 Aug 2026"
+    },
+    {
+      "id": "cc-04",
+      "title": "Merged 2 confirmed duplicate task pairs in command-centre's tasks.json",
+      "area": "Command Centre",
+      "type": "process-fix",
+      "severity": "low",
+      "found_by": "Drew",
+      "found_date": "2026-08-21",
+      "status": "done",
+      "recommendation": "One-time data cleanup, final item of the stability plan. Julie/Development-Insight pair (task-1785700344174 / task-1785704715215) and GLAM 38-day-balance pair (t2608111507360 / t2608120903060) merged, not just deleted -- unique actions from each removed duplicate appended into the kept record's actions[] in chronological order. tasks.json 77 -> 75 tasks. Checked ticks.json before deciding which record to keep in the Dev-Insight pair (one member carried a live tick predating the Phase 3 done-sync deploy) -- new confirmed-fact memory written: always check ticks.json id_/eid_ keys before deleting a task.",
+      "source": "command-centre commit dbb248a3 (data/tasks.json); drew/memory/wi-cc-duplicate-pairs-merge-21aug.md"
+    },
+    {
+      "id": "wi-08",
+      "title": "'Priorities This Week' header count is a raw array length -- doesn't subtract hidden/done cards",
+      "area": "Work Inbox",
+      "type": "bug",
+      "severity": "low",
+      "found_by": "Drew",
+      "found_date": "2026-08-21",
+      "status": "open",
+      "recommendation": "Cosmetic only, not yet fixed -- header count should subtract hidden/done cards from the raw section array length.",
+      "source": "Drew observation, 21 Aug 2026 work-inbox/command-centre stability sprint review"
+    },
+    {
+      "id": "wi-09",
+      "title": "Second-machine (begb0037.AD-OAK) Task Scheduler overlap risk never verified",
+      "area": "Work Inbox",
+      "type": "gap",
+      "severity": "medium",
+      "found_by": "Drew",
+      "found_date": "2026-08-21",
+      "status": "open",
+      "recommendation": "No direct access to begb0037.AD-OAK to check whether its scheduled work-inbox jobs can overlap/race with the primary machine's runs. Needs direct verification, not assumed safe.",
+      "source": "Drew observation, 21 Aug 2026 work-inbox/command-centre stability sprint review -- no direct access to that machine"
+    },
+    {
+      "id": "cc-05",
+      "title": "~18 stale/abandoned branches on command-centre (claude/*, holding/*) -- pure hygiene",
+      "area": "Command Centre",
+      "type": "process-fix",
+      "severity": "low",
+      "found_by": "Drew",
+      "found_date": "2026-08-21",
+      "status": "open",
+      "recommendation": "Live-checked via the branches API: 19 total branches, 18 non-main (14 claude/* auto-named branches, 3 holding/* branches, 1 cloudflare/workers-autoconfig). Originally relayed as '~15' -- corrected to the real live count rather than repeating the estimate unchecked. None individually triaged this pass; needs a review pass to confirm which are genuinely dead vs. still-relevant before deleting.",
+      "source": "command-centre branches API, live-checked 21 Aug 2026"
+    },
+    {
+      "id": "cross-07",
+      "title": "work-inbox and command-centre CLAUDE.md files found stale in ways that could mislead future diagnosis",
+      "area": "Cross-cutting",
+      "type": "process-fix",
+      "severity": "medium",
+      "found_by": "Drew",
+      "found_date": "2026-08-21",
+      "status": "open",
+      "recommendation": "Both repos' CLAUDE.md files have drifted from current live pipeline state during this stability sprint. Needs a refresh pass so a future session bootstrapping from CLAUDE.md doesn't reconstruct progress from stale prose instead of live state.",
+      "source": "Drew observation, 21 Aug 2026 work-inbox/command-centre stability sprint review"
     }
   ]
 }
