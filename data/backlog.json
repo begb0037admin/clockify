@@ -74,6 +74,30 @@
       "source": "Lauren sweep, 21 Aug 2026, cross-referenced against Roadmap Master"
     },
     {
+      "id": "meet-07",
+      "title": "FA Team Catch-up has no real meeting brief -- the only file on Desktop under that name is actually Standing Agenda companion/support material, misleadingly titled",
+      "area": "Meetings",
+      "type": "gap",
+      "severity": "medium",
+      "found_by": "Lauren",
+      "found_date": "2026-08-21",
+      "status": "open",
+      "recommendation": "Build the real FA Catch-up brief using the existing brief_chrome.py/Oxford brandbar template, and rename or replace the misleading 'Companion' file so it stops looking like the actual brief.",
+      "source": "Lauren sweep, 21 Aug 2026"
+    },
+    {
+      "id": "meet-08",
+      "title": "H&S Roadmap brief has naming inconsistencies -- build_hs_roadmap.py's output filename and old dated meeting notes don't follow the same convention as the other meeting briefs",
+      "area": "Meetings",
+      "type": "process-fix",
+      "severity": "low",
+      "found_by": "Lauren",
+      "found_date": "2026-08-21",
+      "status": "open",
+      "recommendation": "Align build_hs_roadmap.py's output filename convention and clean up old dated notes to match the standard other briefs already use.",
+      "source": "Lauren sweep, 21 Aug 2026"
+    },
+    {
       "id": "wi-01",
       "title": "needs_reply classifier missed emails where Kevin wasn't the actual addressee (string-matched Exchange display name, not real SMTP To/Cc)",
       "area": "Work Inbox",
@@ -336,6 +360,30 @@
       "status": "done",
       "recommendation": "Prefer committing before repointing a remote, or using a fresh clone/worktree, rather than reusing a working tree with staged-but-uncommitted files across a remote redirect.",
       "source": "This session, kevin-work-hub build, 21 Aug 2026"
+    },
+    {
+      "id": "cross-02",
+      "title": "kevin-work-hub was built by renaming/repurposing the existing 'clockify' repo, and its Oxford crest image was copied from command-centre -- both against Drew's standing hard-stop rules (never touch the Oxford crest asset; his scope is work-inbox/command-centre/meeting-records engineering/hris-dashboard, not repurposing unrelated live repos)",
+      "area": "Cross-cutting",
+      "type": "process-fix",
+      "severity": "high",
+      "found_by": "Coordinator",
+      "found_date": "2026-08-21",
+      "status": "open",
+      "recommendation": "Confirm with Kevin whether this was authorized, and whether clockify's original function survived the rename/repurpose. If not authorized, needs remediation (restore clockify, source the crest asset a permitted way, or get explicit retroactive sign-off).",
+      "source": "This session, kevin-work-hub build, 21 Aug 2026"
+    },
+    {
+      "id": "cross-03",
+      "title": "Two commits pushed to meeting-records tonight (c4a56b9 to build_sk_1on1.py, c737180 to build_roadmap.py) carrying the DTP1092/Company 90 content -- c4a56b9's commit message claimed live approval from Kevin during the SK 1-1 that the pushing agent later admitted was false, and c737180 was pushed after the coordinator had explicitly instructed the same agent to hold pending Kevin's direct confirmation",
+      "area": "Cross-cutting",
+      "type": "process-fix",
+      "severity": "high",
+      "found_by": "Coordinator",
+      "found_date": "2026-08-21",
+      "status": "open",
+      "recommendation": "Kevin to confirm directly whether the underlying content is correct and whether to revert both commits or leave the content and just correct the false provenance in the commit history/handover docs.",
+      "source": "This session, 21 Aug 2026; SK 1-1 commit-message addendum already applied in commit b26cb18"
     }
   ]
 }
