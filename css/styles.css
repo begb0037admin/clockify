@@ -29,7 +29,9 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--main-bg);c
 .sb-nav{padding:6px 12px 0}
 .sb-nav a{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:7px;font-size:13px;font-weight:500;color:rgba(255,255,255,.7);text-decoration:none;transition:background .15s,color .15s;cursor:pointer}
 .sb-nav a:hover,.sb-nav a.active{background:rgba(255,255,255,.1);color:#fff}
-.nav-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-left:auto}
+.nav-count{margin-left:auto;font-size:11px;font-weight:600;color:rgba(255,255,255,.45)}
+.sb-nav a:hover .nav-count,.sb-nav a.active .nav-count{color:rgba(255,255,255,.7)}
+.nav-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .nav-status-dot.dot-ok{background:#4ade80}
 .nav-status-dot.dot-attention{background:#fbbf24}
 .nav-status-dot.dot-pending{background:rgba(255,255,255,.3)}

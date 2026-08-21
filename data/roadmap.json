@@ -1,11 +1,12 @@
 {
-  "generated_at": "2026-08-21 17:11 UTC",
+  "generated_at": "2026-08-21 17:21 UTC",
   "model": "curated-backlog-v2",
   "pillars": [
     {
       "id": "meetings",
       "label": "Meetings",
       "status": "attention",
+      "open_count": 8,
       "source": "Curated cross-agent backlog (data/backlog.json) -- not a live metrics mirror",
       "summary": "8 open backlog item(s) (1 bug, 5 gap, 2 process-fix).",
       "backlog": [
@@ -112,6 +113,7 @@
       "id": "work-inbox",
       "label": "Work Inbox",
       "status": "attention",
+      "open_count": 3,
       "source": "Curated cross-agent backlog (data/backlog.json) -- not a live metrics mirror",
       "summary": "3 open backlog item(s) (2 bug, 1 gap). 1 resolved.",
       "backlog": [
@@ -170,6 +172,7 @@
       "id": "command-centre",
       "label": "Command Centre",
       "status": "attention",
+      "open_count": 2,
       "source": "Curated cross-agent backlog (data/backlog.json) -- not a live metrics mirror",
       "summary": "2 open backlog item(s) (1 bug, 1 gap).",
       "backlog": [
@@ -204,6 +207,7 @@
       "id": "knowledge-base",
       "label": "Knowledge Base",
       "status": "attention",
+      "open_count": 12,
       "source": "Curated cross-agent backlog (data/backlog.json) -- not a live metrics mirror",
       "summary": "12 open backlog item(s) (1 bug, 7 gap, 1 improvement-idea, 3 process-fix).",
       "backlog": [
@@ -358,6 +362,7 @@
       "id": "hris",
       "label": "HRIS",
       "status": "attention",
+      "open_count": 3,
       "source": "Curated cross-agent backlog (data/backlog.json) -- not a live metrics mirror",
       "summary": "3 open backlog item(s) (1 gap, 2 process-fix).",
       "backlog": [
@@ -404,6 +409,7 @@
       "id": "cross-cutting",
       "label": "Cross-cutting",
       "status": "attention",
+      "open_count": 2,
       "source": "Curated cross-agent backlog (data/backlog.json) -- not a live metrics mirror",
       "summary": "2 open backlog item(s) (2 process-fix). 1 resolved.",
       "backlog": [

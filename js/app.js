@@ -48,6 +48,7 @@ function renderNav(pillars) {
   nav.innerHTML = pillars.map(p => `
     <a id="nav-${esc(p.id)}" onclick="showView('${esc(p.id)}')">
       <span>${esc(p.label)}</span>
+      <span class="nav-count">${esc(p.open_count ?? '')}</span>
       <span class="nav-status-dot ${dotClass(p.status)}"></span>
     </a>
   `).join('');

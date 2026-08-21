@@ -83,6 +83,7 @@ def build_pillar(area, items):
         "id": AREA_ID[area],
         "label": area,
         "status": status,
+        "open_count": len(open_items),
         "source": "Curated cross-agent backlog (data/backlog.json) -- not a live metrics mirror",
         "summary": summary,
         "backlog": sorted(items, key=lambda i: (i.get("status") == "done", {"high": 0, "medium": 1, "low": 2}.get(i.get("severity"), 3))),
