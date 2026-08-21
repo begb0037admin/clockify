@@ -1,0 +1,332 @@
+:root {
+  --navy: #002147;
+  --navy-light: #0a3565;
+  --bg: #f5f7fb;
+  --card-bg: #ffffff;
+  --border: #e2e8f0;
+  --text: #1a2233;
+  --text-muted: #64748b;
+  --ok: #16a34a;
+  --attention: #f59e0b;
+  --overdue: #ef4444;
+  --pending: #94a3b8;
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--navy);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 18px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.brand-crest {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--navy-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.brand-title {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.brand-sub {
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+}
+
+.pillar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.pillar-nav a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: rgba(255,255,255,0.85);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+
+.pillar-nav a:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.nav-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sidebar-footer {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  border-top: 1px solid rgba(255,255,255,0.12);
+  padding-top: 14px;
+}
+
+.sidebar-footer a {
+  display: block;
+  margin-top: 6px;
+  color: rgba(255,255,255,0.75);
+}
+
+.main {
+  flex: 1;
+  padding: 32px 40px 60px;
+  max-width: 1200px;
+}
+
+.topbar h1 {
+  margin: 0 0 6px;
+  font-size: 24px;
+}
+
+.topbar-sub {
+  margin: 0 0 28px;
+  color: var(--text-muted);
+  font-size: 13.5px;
+  max-width: 780px;
+  line-height: 1.5;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  margin-bottom: 36px;
+}
+
+.overview-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  border-top: 3px solid var(--pending);
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.overview-card.status-ok { border-top-color: var(--ok); }
+.overview-card.status-attention { border-top-color: var(--attention); }
+.overview-card.status-pending { border-top-color: var(--pending); }
+
+.overview-card .label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 8px;
+}
+
+.overview-card .status-badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.status-ok .status-badge { color: var(--ok); }
+.status-attention .status-badge { color: var(--attention); }
+.status-pending .status-badge { color: var(--pending); }
+
+.pillars {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.pillar-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  scroll-margin-top: 20px;
+}
+
+.pillar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.pillar-head h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.pill {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.pill.status-ok { background: #dcfce7; color: #166534; }
+.pill.status-attention { background: #fef3c7; color: #92400e; }
+.pill.status-pending { background: #f1f5f9; color: #475569; }
+
+.pillar-source {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin: 0 0 12px;
+}
+
+.pillar-summary {
+  font-size: 14px;
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+.pillar-caveat {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  color: #92400e;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.count-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.count-chip {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+.count-chip b {
+  font-size: 15px;
+  display: block;
+}
+
+.item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.item-row {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
+.item-row .item-title {
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.item-row .item-note {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.item-row.overdue { border-left: 3px solid var(--overdue); }
+.item-row.blocked { border-left: 3px solid var(--attention); }
+
+.status-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text-muted);
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.section-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  margin: 18px 0 8px;
+}
+
+.section-label:first-of-type { margin-top: 0; }
+
+.pillar-link {
+  display: inline-block;
+  margin-top: 16px;
+  font-size: 12.5px;
+  color: var(--navy);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.pillar-link:hover { text-decoration: underline; }
+
+.empty-note {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+@media (max-width: 1000px) {
+  .overview-grid { grid-template-columns: repeat(2, 1fr); }
+  .shell { flex-direction: column; }
+  .sidebar { width: 100%; }
+  .main { padding: 24px 18px 48px; }
+}
