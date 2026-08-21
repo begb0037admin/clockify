@@ -1,5 +1,20 @@
 # HANDOVER — kevin-work-hub
 
+## 21 Aug 2026 (later same day) — backlog reconciled with the work-inbox/command-centre stability sprint, 32 -> 44 items
+
+Kevin's own work-inbox/command-centre stability sprint (Phases 1-3: scroll-out persistence, drag-and-drop rework, silent-failure toasts, ticks.json race-fix, staleness-clock fix, cross-system done-sync, wrangler-deploy confirmation, duplicate-task-pair merge) finished the same day this backlog was built — reconciled here rather than left stale.
+
+- `wi-03` (scroll-out persistence) updated `open` -> `done` (was already in the backlog from the original sweep; not duplicated).
+- 12 new items added: 9 `done` (`wi-05` drag-and-drop rework, `wi-06` silent-failure toasts, `wi-07` newest-first insertion, `cross-04` ticks.json race-fix, `cross-05` staleness-clock shared fix, `cross-06` cross-system done-sync, `cc-03` wrangler-deploy confirmation, `cc-04` duplicate-pair merge) and 3 `open` (`wi-08` header-count cosmetic bug, `wi-09` second-machine Task Scheduler overlap risk, `cc-05` abandoned branches, `cross-07` stale CLAUDE.md files).
+- Every commit sha cited was live-checked via `gh api .../commits?path=...` rather than trusted from prior memory at face value — one correction found doing this: `cc`'s staleness-clock fix (`1a79b259`) had actually already been fast-forward-merged to `command-centre` main, not still "staged on branch pending approval" as an earlier same-day memory file said.
+- One relayed estimate corrected rather than repeated: "~15 abandoned branches on command-centre" checked live against the branches API — real count is 19 total / 18 non-main.
+- `wi-05` (drag-and-drop rework) flagged as work-inbox-only in its own entry: the original finding was framed as spanning both work-inbox and command-centre, but checking command-centre's own `js/app.js` commit history directly found no matching drag-and-drop change there — not asserted as fixed on the command-centre side without evidence.
+- `build_roadmap.py` run unmodified against the updated `data/backlog.json` (44 items in, clean run, no unknown-area warnings). Both `data/backlog.json` and `data/roadmap.json` pushed via the Contents API with a race-guard SHA re-check immediately before each push, then byte-diffed against the live files afterward to confirm the push landed exactly as intended.
+- Commits: `5663f576` (`data/backlog.json`), `f9476504` (`data/roadmap.json`), both on `main`.
+- Full detail in `begb0037admin/drew`'s own memory: `memory/kevin-work-hub-21aug-stability-sprint-reconcile.md`.
+
+**Not done this pass:** no `index.html`/`css`/`js` changes (none needed — the existing chip/card rendering already handles new items without a schema change). Did not delete any of command-centre's stale branches (logged as `cc-05`, a hygiene finding, not swept unprompted).
+
 ## 21 Aug 2026 — v2 built (correct data model + tabs + branding), awaiting Kevin's re-review
 
 **Repo history:** originally dispatched as a new `begb0037admin/hr-work-roadmap` repo; nothing was ever pushed there. Redirected mid-build to `kevin-work-hub` (renamed from `clockify`) per Kevin's confirmed decision, relayed by Lauren and verified directly before acting. `hr-work-roadmap` is left empty on GitHub, unresolved, pending a delete-or-leave call.
