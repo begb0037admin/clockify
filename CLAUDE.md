@@ -6,7 +6,7 @@
 - **Content owners:** every agent who works the estate can and should add items — Lauren (meeting-records), Adam (knowledge base), Drew (work-inbox/command-centre/HRIS engineering), Markey, Matthew. Drew owns the pipeline/schema; the backlog's actual content is genuinely cross-agent.
 - **Built:** 21 Aug 2026. v1 (live-metrics mirror) rejected same day by Kevin. v2 (curated backlog) built same day.
 - **Repo:** https://github.com/begb0037admin/kevin-work-hub — this repo was formerly `clockify` (Kevin's dormant time-tracking project scaffold). Renamed and repurposed 21 Aug 2026 at Kevin's confirmed decision (relayed by Lauren), specifically to avoid a naming collision with the still-live "Clockify" tool discussion elsewhere in the estate. All legacy Clockify-project content preserved intact in `Archive/clockify-project-2026-08-21/`, not deleted.
-- **Live dashboard:** https://begb0037admin.github.io/kevin-work-hub/
+- **Live dashboard:** https://hub.lelitte.co.uk/ (primary, custom domain added 21 Aug 2026 — CNAME file + GitHub Pages custom-domain setting configured; DNS record in Cloudflare not yet added, see HANDOVER.md for status) — https://begb0037admin.github.io/kevin-work-hub/ remains live as fallback.
 
 ## Bootstrap order
 1. This file
