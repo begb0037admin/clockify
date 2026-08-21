@@ -1,7 +1,9 @@
 // kevin-work-hub -- client-side renderer.
-// Reads data/roadmap.json (produced by build_roadmap.py) and renders the
-// overview strip + per-pillar detail cards. No writes happen from this page
-// -- this is a read-only consolidated view, unlike command-centre's board.
+// Reads data/roadmap.json (produced by build_roadmap.py) and renders one
+// tab per pillar (sidebar nav + single visible main view), mirroring
+// command-centre's showView()/nav-<id>/.active pattern exactly rather than
+// stacking everything on one page. No writes happen from this page -- this
+// is a read-only consolidated view, unlike command-centre's task board.
 
 const DATA_URL = 'data/roadmap.json';
 
@@ -22,149 +24,122 @@ function statusLabel(status) {
   }
 }
 
+function badgeClass(status) {
+  if (status === 'ok') return 'badge-ok';
+  if (status === 'attention') return 'badge-gold';
+  return 'badge-pending';
+}
+
+function dotClass(status) {
+  if (status === 'ok') return 'dot-ok';
+  if (status === 'attention') return 'dot-attention';
+  return 'dot-pending';
+}
+
 async function loadData() {
   const res = await fetch(`${DATA_URL}?v=${Date.now()}`, { cache: 'no-store' });
   if (!res.ok) throw new Error(`Failed to load ${DATA_URL}: ${res.status}`);
   return res.json();
 }
 
+/* NAV -- one tab per pillar, house sb-nav pattern */
 function renderNav(pillars) {
   const nav = document.getElementById('pillarNav');
   nav.innerHTML = pillars.map(p => `
-    <a href="#pillar-${esc(p.id)}">
+    <a id="nav-${esc(p.id)}" onclick="showView('${esc(p.id)}')">
       <span>${esc(p.label)}</span>
-      <span class="nav-dot" style="background:${dotColor(p.status)}"></span>
+      <span class="nav-status-dot ${dotClass(p.status)}"></span>
     </a>
   `).join('');
 }
 
-function dotColor(status) {
-  if (status === 'ok') return '#16a34a';
-  if (status === 'attention') return '#f59e0b';
-  return '#94a3b8';
+function itemStatusChipClass(status) {
+  if (status === 'done') return 'source-chip chip-done';
+  if (status === 'in-progress') return 'source-chip chip-progress';
+  return 'source-chip chip-open';
 }
 
-function renderOverview(pillars) {
-  const grid = document.getElementById('overviewGrid');
-  grid.innerHTML = pillars.map(p => `
-    <a class="overview-card status-${esc(p.status)}" href="#pillar-${esc(p.id)}">
-      <div class="label">${esc(p.label)}</div>
-      <div class="status-badge">${esc(statusLabel(p.status))}</div>
-    </a>
-  `).join('');
+function severityChipClass(sev) {
+  if (sev === 'high') return 'source-chip chip-high';
+  if (sev === 'medium') return 'source-chip chip-medium';
+  return 'source-chip chip-low';
 }
 
-function renderCountRow(counts) {
-  if (!counts) return '';
-  const entries = Object.entries(counts).filter(([, v]) => v !== undefined && v !== null);
-  if (!entries.length) return '';
-  return `<div class="count-row">${entries.map(([k, v]) => `
-    <div class="count-chip"><b>${esc(v)}</b>${esc(k.replace(/_/g, ' '))}</div>
-  `).join('')}</div>`;
-}
-
-function renderItemList(items, opts = {}) {
-  if (!items || !items.length) return `<p class="empty-note">${esc(opts.emptyText || 'Nothing to show.')}</p>`;
+/* Renders one backlog item: title, type/severity/status chips, recommendation, source. */
+function renderBacklog(items) {
+  if (!items || !items.length) return `<p class="empty-note">No backlog items logged yet for this area.</p>`;
   return `<div class="item-list">${items.map(i => {
-    const title = i.title || i.name || '(untitled)';
-    const noteParts = [];
-    if (i.from) noteParts.push(`From ${i.from}`);
-    if (i.owner) noteParts.push(`Owner: ${i.owner}`);
-    if (i.status && !opts.hideStatusInNote) noteParts.push(i.status);
-    if (i.note) noteParts.push(i.note);
-    if (i.file) noteParts.push(i.file);
-    const cls = ['item-row'];
-    if (opts.overdue) cls.push('overdue');
-    if (i.status === 'blocked') cls.push('blocked');
-    return `<div class="${cls.join(' ')}">
-      <div class="item-title">${esc(i.id !== undefined ? i.id + ' — ' : '')}${esc(title)}${i.status ? `<span class="status-tag">${esc(i.status)}</span>` : ''}</div>
-      ${noteParts.length ? `<div class="item-note">${esc(noteParts.join(' — '))}</div>` : ''}
+    const chips = [
+      `<span class="source-chip">${esc(i.type || '')}</span>`,
+      `<span class="${severityChipClass(i.severity)}">${esc(i.severity || '')}</span>`,
+      `<span class="${itemStatusChipClass(i.status)}">${esc(i.status || '')}</span>`,
+    ].join(' ');
+    const metaParts = [];
+    if (i.found_by) metaParts.push(`Found by ${i.found_by}`);
+    if (i.found_date) metaParts.push(i.found_date);
+    return `<div class="item-row">
+      <div class="item-title">${esc(i.id ? i.id + ' — ' : '')}${esc(i.title || '(untitled)')}</div>
+      <div class="item-chips">${chips}</div>
+      ${metaParts.length ? `<div class="item-note">${esc(metaParts.join(' · '))}</div>` : ''}
+      ${i.recommendation ? `<div class="item-recommendation"><b>Recommendation:</b> ${esc(i.recommendation)}</div>` : ''}
+      ${i.source ? `<div class="item-source">Source: ${esc(i.source)}</div>` : ''}
     </div>`;
   }).join('')}</div>`;
 }
 
-function renderPillar(p) {
-  let body = '';
-
-  if (p.caveat) {
-    body += `<div class="pillar-caveat">${esc(p.caveat)}</div>`;
-  }
-
-  body += renderCountRow(p.counts);
-
-  if (p.areas && p.areas.length) {
-    body += `<div class="section-label">Handover areas</div>`;
-    body += renderItemList(p.areas);
-  }
-
-  if (p.overdue && p.overdue.length) {
-    body += `<div class="section-label">Overdue Roadmap Master items</div>`;
-    body += renderItemList(p.overdue, { overdue: true });
-  }
-
-  if (p.items && p.items.length) {
-    body += `<div class="section-label">Open items</div>`;
-    body += renderItemList(p.items);
-  }
-
-  if (p.urgent_items && p.urgent_items.length) {
-    body += `<div class="section-label">Urgent</div>`;
-    body += renderItemList(p.urgent_items);
-  }
-
-  if (p.needs_items && p.needs_items.length) {
-    body += `<div class="section-label">Needs reply</div>`;
-    body += renderItemList(p.needs_items);
-  }
-
-  if (p.new_suggestion_items && p.new_suggestion_items.length) {
-    body += `<div class="section-label">New task suggestions (not yet in Command Centre)</div>`;
-    body += renderItemList(p.new_suggestion_items);
-  }
-
-  if (p.today_open_items && p.today_open_items.length) {
-    body += `<div class="section-label">Today (open)</div>`;
-    body += renderItemList(p.today_open_items);
-  }
-
-  if (p.change_requests && p.change_requests.length) {
-    body += `<div class="section-label">Change requests</div>`;
-    body += renderItemList(p.change_requests);
-  }
+/* MAIN -- one .pillar-view section per pillar, house page-header pattern */
+function renderPillarView(p) {
+  const body = renderBacklog(p.backlog);
 
   return `
-    <section class="pillar-card" id="pillar-${esc(p.id)}">
-      <div class="pillar-head">
-        <h2>${esc(p.label)}</h2>
-        <span class="pill status-${esc(p.status)}">${esc(statusLabel(p.status))}</span>
+    <div class="pillar-view" id="view-${esc(p.id)}">
+      <div class="page-header">
+        <div>
+          <div class="page-title">${esc(p.label)}</div>
+          <div class="header-date">${esc(p.source || '')}</div>
+        </div>
+        <span class="badge ${badgeClass(p.status)}">${esc(statusLabel(p.status))}</span>
       </div>
-      <p class="pillar-source">${esc(p.source || '')}</p>
       <p class="pillar-summary">${esc(p.summary || '')}</p>
       ${body}
       ${p.link ? `<a class="pillar-link" href="${esc(p.link)}" target="_blank" rel="noopener">Open live source →</a>` : ''}
-    </section>
+    </div>
   `;
 }
 
-function renderPillars(pillars) {
-  document.getElementById('pillars').innerHTML = pillars.map(renderPillar).join('');
+function renderMain(pillars) {
+  document.getElementById('main').innerHTML = pillars.map(renderPillarView).join('');
 }
+
+/* VIEWS -- mirrors command-centre's showView()/nav-<id>/.active pattern exactly */
+let PILLAR_IDS = [];
+function showView(v) {
+  PILLAR_IDS.forEach(function (id) {
+    const el = document.getElementById('view-' + id);
+    if (el) el.classList.toggle('active', id === v);
+    const navEl = document.getElementById('nav-' + id);
+    if (navEl) navEl.classList.toggle('active', id === v);
+  });
+  try { localStorage.setItem('workRoadmap_lastView', v); } catch (e) {}
+}
+window.showView = showView;
 
 async function init() {
   try {
     const data = await loadData();
     document.getElementById('generatedAt').textContent = `Generated ${data.generated_at}`;
+    PILLAR_IDS = data.pillars.map(p => p.id);
     renderNav(data.pillars);
-    renderOverview(data.pillars);
-    renderPillars(data.pillars);
+    renderMain(data.pillars);
+    let startView = PILLAR_IDS[0];
+    try {
+      const saved = localStorage.getItem('workRoadmap_lastView');
+      if (saved && PILLAR_IDS.includes(saved)) startView = saved;
+    } catch (e) {}
+    showView(startView);
   } catch (err) {
-    document.getElementById('pillars').innerHTML = `<p class="empty-note">Failed to load roadmap data: ${esc(err.message)}</p>`;
+    document.getElementById('main').innerHTML = `<p class="empty-note">Failed to load roadmap data: ${esc(err.message)}</p>`;
   }
 }
-
-document.getElementById('refreshLink')?.addEventListener('click', (e) => {
-  e.preventDefault();
-  location.reload();
-});
 
 init();

@@ -1,3 +1,5 @@
 server.log
 screenshot_full.png
 __pycache__/
+rebuild_*.png
+v2_*.png

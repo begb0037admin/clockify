@@ -1,90 +1,85 @@
 {
-  "generated_at": "2026-08-21 11:47 UTC",
+  "generated_at": "2026-08-21 12:42 UTC",
+  "model": "curated-backlog-v2",
   "pillars": [
     {
       "id": "meetings",
       "label": "Meetings",
       "status": "attention",
-      "source": "Lauren sweep, begb0037admin/meeting-records, 21 Aug 2026 (relayed via SendMessage, not live-pulled)",
-      "summary": "2 handover areas need attention (HR Systems Roadmap has silently-dropped items; SK 1-1 has 2 unpushed pending prep items); 7 Roadmap Master items overdue. Status here is last-known, not live -- see caveat.",
-      "caveat": "Much of this is itself stale (some items last touched 1-2 Aug) -- this is the whole reason the dashboard exists. Treat every line below as “last known status, as of the date shown,” not current fact.",
-      "areas": [
+      "source": "Curated cross-agent backlog (data/backlog.json) -- not a live metrics mirror",
+      "summary": "6 open backlog item(s) (1 bug, 4 gap, 1 process-fix).",
+      "backlog": [
         {
-          "name": "HR Systems Roadmap - Handover",
-          "status": "open-gaps",
-          "note": "‘Organisational Structure Update — Aug 2026’ (Simon Burford's 3-unit reorg proposal) drafted 18 Aug, verified live, never propagated to any brief. ORCID-onboarding thread (DTP1092, open since Oct 2024, last touched 27 Feb 2026) also silently dropped, untracked in command-centre/work-inbox."
+          "id": "meet-01",
+          "title": "No persistent cross-brief item registry -- items drafted for one brief never propagate to others",
+          "area": "Meetings",
+          "type": "gap",
+          "severity": "high",
+          "found_by": "Drew",
+          "found_date": "2026-08-21",
+          "status": "open",
+          "recommendation": "Build a shared item registry with a last-verified date per item, and a pre-finish check that scans every other brief's item set for anything that should also appear.",
+          "source": "meeting-records tools/speaking-briefs/PIPELINE_RELIABILITY_REVIEW.md, commit a28ac0d"
         },
         {
-          "name": "Health and Safety Roadmap - Handover",
-          "status": "not-refreshed",
-          "note": "Area exists, no content refresh done in this sweep, not cross-referenced tonight."
+          "id": "meet-02",
+          "title": "Organisational Structure Update (Simon Burford's 3-unit reorg proposal) drafted 18 Aug for the SK 1-1 brief, never reached the Roadmap brief",
+          "area": "Meetings",
+          "type": "bug",
+          "severity": "high",
+          "found_by": "Drew / Lauren",
+          "found_date": "2026-08-18",
+          "status": "open",
+          "recommendation": "Propagate manually now; root cause is meet-01, fixing that prevents recurrence.",
+          "source": "work-inbox HANDOVER.md commit 91ce237b; command-centre task-1787072363309"
         },
         {
-          "name": "HR Systems Managers Meeting - Handover",
-          "status": "not-refreshed",
-          "note": "Area exists, no content refresh done in this sweep."
+          "id": "meet-03",
+          "title": "ORCID-onboarding sub-thread inside DTP1092 untracked anywhere (open since Oct 2024)",
+          "area": "Meetings",
+          "type": "gap",
+          "severity": "medium",
+          "found_by": "Drew",
+          "found_date": "2026-08-21",
+          "status": "open",
+          "recommendation": "Give it its own tracked item on the Roadmap Master or fold explicitly into DTP1092's own status, rather than living only inside update-history prose.",
+          "source": "build_roadmap.py DTP1092 update history, refreshed 21 Aug, commit c737180"
         },
         {
-          "name": "SK 1-1 - Handover",
-          "status": "open-gaps",
-          "note": "Two pending prep items never pushed to the actual brief: P1 org-structure reorg, P2 Cority Applicant Data Import file (DOB format fix; ‘who built RECSUP20’ question resolved 20 Aug -- Grace, not Lee)."
+          "id": "meet-04",
+          "title": "SK 1-1 -- 2 pending prep items never pushed to the actual brief",
+          "area": "Meetings",
+          "type": "process-fix",
+          "severity": "medium",
+          "found_by": "Lauren",
+          "found_date": "2026-08-21",
+          "status": "open",
+          "recommendation": "Push P1 (org-structure reorg) and P2 (Cority Applicant Data Import DOB format fix) into the brief before the next SK 1-1.",
+          "source": "Lauren sweep, 21 Aug 2026"
         },
         {
-          "name": "Team 1-1's (Asta / James / Michael)",
-          "status": "unknown",
-          "note": "Existing areas, not reviewed in this sweep, status unknown."
+          "id": "meet-05",
+          "title": "KPI Presentation -- unconfirmed whether June/July runs happened during Kevin's absence; kpi-definitions.md still a stub",
+          "area": "Meetings",
+          "type": "gap",
+          "severity": "medium",
+          "found_by": "Lauren",
+          "found_date": "2026-08-21",
+          "status": "open",
+          "recommendation": "Confirm with Kevin directly whether June/July KPI runs happened; fill in kpi-definitions.md.",
+          "source": "Lauren sweep, 21 Aug 2026"
         },
         {
-          "name": "KPI Presentation - Handover",
-          "status": "unknown",
-          "note": "Last confirmed KPI run: May 2026 (sent 9 Jun, presented 10 Jun). Unconfirmed whether June/July runs happened during Kevin's absence. kpi-definitions.md still a stub."
-        },
-        {
-          "name": "Standing Agenda - Handover",
-          "status": "in-progress",
-          "note": "August 2026 deck real/live/approved, 6 slides, actively iterated 2–18 Aug. Two newly appended slides (positions 5–6) still awaiting Kevin's confirm on final placement."
-        },
-        {
-          "name": "Meeting Pipeline Review - Handover",
-          "status": "meta",
-          "note": "The meta-item this whole dashboard traces back to. Root cause doc: tools/speaking-briefs/PIPELINE_RELIABILITY_REVIEW.md (commit a28ac0d) -- every brief is a hand-authored snapshot, no persistent registry, no staleness mechanism. 3 fix options sketched, none built yet."
-        }
-      ],
-      "overdue": [
-        {
-          "id": "136",
-          "title": "PeopleXD DPIA",
-          "note": "Stage 7 sign-off stuck with Marie Cooksey since 3 Jul."
-        },
-        {
-          "id": "DTP1334",
-          "title": "H&S Management System",
-          "note": "31 Jul deadline passed, revised date never confirmed."
-        },
-        {
-          "id": "DTP1092",
-          "title": "Research management data for REF & research quality",
-          "note": "Refreshed 21 Aug (commit c737180) -- College/PXD workstream now in integration testing; REF-via-ESS sub-thread possibly stale-overdue (UDF actually went live 7 Jul); ORCID sub-thread open since 2024, untracked."
-        },
-        {
-          "id": "ITS1004",
-          "title": "WFM Rollout",
-          "note": "GLAM resolution call status unconfirmed."
-        },
-        {
-          "id": "179",
-          "title": "SSO Migration",
-          "note": "3 Jul decision-day outcome never recorded."
-        },
-        {
-          "id": "174_b",
-          "title": "H&S Dashboards",
-          "note": "Brian's stakeholder comms still not sent as of last check."
-        },
-        {
-          "id": "22_c/22_d",
-          "title": "Security Model Review (phase 1 / university-wide)",
-          "note": "On hold, no movement in over a year on 22_d."
+          "id": "meet-06",
+          "title": "7 Roadmap Master items overdue with no revised date confirmed (136 PeopleXD DPIA, DTP1334 H&S Management System, DTP1092 REF-via-ESS sub-thread, ITS1004 WFM Rollout, 179 SSO Migration, 174_b H&S Dashboards, 22_c/22_d Security Model Review)",
+          "area": "Meetings",
+          "type": "gap",
+          "severity": "medium",
+          "found_by": "Lauren",
+          "found_date": "2026-08-21",
+          "status": "open",
+          "recommendation": "Each needs an owner check-in for a revised date, not just a standing 'overdue' flag.",
+          "source": "Lauren sweep, 21 Aug 2026, cross-referenced against Roadmap Master"
         }
       ],
       "link": null
@@ -93,125 +88,90 @@
       "id": "work-inbox",
       "label": "Work Inbox",
       "status": "attention",
-      "source": "begb0037admin/work-inbox data/briefing.json + data/inbox_suggestions.json (live)",
-      "summary": "0 urgent, 9 needs-reply, 43 FYI. 4 new task suggestion(s) not yet actioned in Command Centre.",
-      "counts": {
-        "urgent": 0,
-        "needs": 9,
-        "fyi": 43,
-        "low": 1,
-        "priorities_today": 6,
-        "priorities_week": 39,
-        "new_suggestions": 4,
-        "applied_updates": 0
-      },
-      "urgent_items": [],
-      "needs_items": [
+      "source": "Curated cross-agent backlog (data/backlog.json) -- not a live metrics mirror",
+      "summary": "3 open backlog item(s) (2 bug, 1 gap). 1 resolved.",
+      "backlog": [
         {
-          "title": "Sickness Absence Data Catch-up",
-          "from": "Sarah Rowles"
+          "id": "wi-02",
+          "title": "needs_reply classifier drops bare meeting-invite/no-content emails entirely (8 of 9 undrafted entries in one pass were just calendar boilerplate)",
+          "area": "Work Inbox",
+          "type": "gap",
+          "severity": "medium",
+          "found_by": "Lauren",
+          "found_date": "2026-08-12",
+          "status": "open",
+          "recommendation": "Distinguish 'no real ask, correctly skip' from 'ask present but misread as an invite' -- not yet separated.",
+          "source": "lauren/memory/meeting-invite-gap-and-12aug-pass.md"
         },
         {
-          "title": "RE: Farewell wishes and gift for Beth",
-          "from": "Julie Hickman"
+          "id": "wi-03",
+          "title": "Items scroll out of the 50-newest-email pull window before being actioned (Quirke/Access Group case)",
+          "area": "Work Inbox",
+          "type": "bug",
+          "severity": "medium",
+          "found_by": "Drew",
+          "found_date": "2026-08-17",
+          "status": "open",
+          "recommendation": "Fix proposed, not built: persist items past the pull window until explicitly resolved.",
+          "source": "drew/memory/wi-quirke-needs-tier-scrollout-17aug.md"
         },
         {
-          "title": "RE: 38 day balance for departments update and decisions needed",
-          "from": "Julie Hickman"
+          "id": "wi-04",
+          "title": "needs_reply.json's own rolling window separately drops entries before they're drafted (NHS Pension tiers case) -- a 4th distinct class of needs_reply gap, possibly same mechanism as wi-03 but not confirmed identical",
+          "area": "Work Inbox",
+          "type": "bug",
+          "severity": "medium",
+          "found_by": "Lauren",
+          "found_date": "2026-08-19",
+          "status": "open",
+          "recommendation": "Confirm whether wi-03 and wi-04 share a root cause before building two separate fixes.",
+          "source": "lauren/memory/backlog-drafting-19aug-kpi-and-nhs-pension.md"
         },
         {
-          "title": "RE: 38 day balance for departments update and decisions needed",
-          "from": "Julie Hickman"
-        },
-        {
-          "title": "FW: Application form - identification of internal candidates",
-          "from": "Simon Burford"
-        },
-        {
-          "title": "RE: 38 day balance for departments update and decisions needed",
-          "from": "Julie Hickman"
-        },
-        {
-          "title": "Fw: GLAM- Botanic Gardens Ticket Office and Ashmolean Security- Rostering requirement ",
-          "from": "Kevin Lelitte"
-        },
-        {
-          "title": "Fw: Strategic Health & Safety Management System project supplier requirements evaluations; upcoming deadline of Friday 21 August",
-          "from": "Helen Harbour"
-        },
-        {
-          "title": "RE: Org Structure Update",
-          "from": "Organisational Structure"
+          "id": "wi-01",
+          "title": "needs_reply classifier missed emails where Kevin wasn't the actual addressee (string-matched Exchange display name, not real SMTP To/Cc)",
+          "area": "Work Inbox",
+          "type": "bug",
+          "severity": "high",
+          "found_by": "Drew",
+          "found_date": "2026-08-18",
+          "status": "done",
+          "recommendation": "Fixed -- Recipients/PropertyAccessor SMTP resolution, tested 5/5 live.",
+          "source": "work-inbox main, commit c8ab371, deployed 20 Aug 2026"
         }
       ],
-      "new_suggestion_items": [
-        {
-          "title": "Review sickness absence data completeness with Sarah Rowles",
-          "tier": "week"
-        },
-        {
-          "title": "Confirm Holiday Records 3 Reports scheduling with Alan Quirke",
-          "tier": "week"
-        },
-        {
-          "title": "Clarify availability for Cross-Team Process Improvement Working Group",
-          "tier": "week"
-        },
-        {
-          "title": "Attend planning meeting for departments moving to 38-day balance",
-          "tier": "tomorrow"
-        }
-      ],
-      "briefing_date": "Friday 21 August 2026",
-      "refreshed_at": "Friday 21 August · 12:02",
       "link": "https://begb0037admin.github.io/work-inbox/"
     },
     {
       "id": "command-centre",
       "label": "Command Centre",
-      "status": "ok",
-      "source": "begb0037admin/command-centre data/tasks.json (live)",
-      "summary": "64 open tasks across Today/Tomorrow/This Week/Parked (13 done, 77 total).",
-      "counts": {
-        "today_open": 6,
-        "today_done": 7,
-        "tomorrow_open": 9,
-        "tomorrow_done": 6,
-        "week_open": 40,
-        "week_done": 0,
-        "parked_open": 9,
-        "parked_done": 0
-      },
-      "today_open_items": [
+      "status": "attention",
+      "source": "Curated cross-agent backlog (data/backlog.json) -- not a live metrics mirror",
+      "summary": "2 open backlog item(s) (1 bug, 1 gap).",
+      "backlog": [
         {
-          "id": "task-1787072363309",
-          "title": "URGENT -- Organisational Structure Update - August 2026 - FINAL",
-          "source": "orgstructure@admin.ox.ac.uk / Simon Burford / Sarah Rowles -- email thread"
+          "id": "cc-01",
+          "title": "Tasks get marked done without a written resolution recorded -- action log can end on an open TODO despite done:true",
+          "area": "Command Centre",
+          "type": "bug",
+          "severity": "medium",
+          "found_by": "Lauren; verified live by Drew",
+          "found_date": "2026-08-21",
+          "status": "open",
+          "recommendation": "Require a resolution note before a task can be marked done, or a confirmation step. Verified live example: task t027 (P5 Incident #11687334) is done:true, last action line is '[TODO] Review thread -- determine if Kevin holds relevant information...'. Note: t020 was also cited but was not found under that id in live data as of this check -- not independently confirmed, flagged rather than asserted.",
+          "source": "command-centre data/tasks.json, task t027, live-checked 21 Aug 2026"
         },
         {
-          "id": "task-1787044968753",
-          "title": "Auto job-alert notification email -- text changes (Laura Porter)",
-          "source": "Laura Porter (Talent Mobility Specialist, People Dept) -- email thread"
-        },
-        {
-          "id": "t2608111331410",
-          "title": "URGENT -- Cority Applicant Data Import file (James Salas Guillen / Simon Burford thread)",
-          "source": "Inbox - James Salas Guillen, 2026-08-11 13:11"
-        },
-        {
-          "id": "t035",
-          "title": "WFM / GLAM Rostering -- set up resolution meeting",
-          "source": "HR Systems Managers Meeting 24/06"
-        },
-        {
-          "id": "t023",
-          "title": "Respond to Support Call# 11688462 -- Ash VEA team",
-          "source": "Email 22/06 Marie Cooksey / Anna Carter-Windle"
-        },
-        {
-          "id": "t2608171727070",
-          "title": "Attend HSMS Tender Session (final) on Microsoft Teams",
-          "source": "Inbox - Christopher Sanders, 2026-08-17 12:09"
+          "id": "cc-02",
+          "title": "command-centre's task schema has no 'owner' field at all, for any task",
+          "area": "Command Centre",
+          "type": "gap",
+          "severity": "low",
+          "found_by": "Drew",
+          "found_date": "2026-08-18",
+          "status": "open",
+          "recommendation": "Needs Kevin's explicit confirmation before adding -- not added unprompted per his own instruction at the time.",
+          "source": "drew/memory/volunteering-leave-timdep04-full-retrieval-18aug.md"
         }
       ],
       "link": "https://begb0037admin.github.io/command-centre/"
@@ -220,129 +180,223 @@
       "id": "knowledge-base",
       "label": "Knowledge Base",
       "status": "attention",
-      "source": "Adam sweep, hr-fa-knowledge-base + knowledge-base-playbook + CORITY-FEASIBILITY.md, 21 Aug 2026 (relayed via Lauren/SendMessage, not live-pulled)",
-      "summary": "12 open/pending items across the knowledge base. 2 blocked on Kevin's own decision or action (5, 9).",
-      "items": [
+      "source": "Curated cross-agent backlog (data/backlog.json) -- not a live metrics mirror",
+      "summary": "12 open backlog item(s) (1 bug, 7 gap, 1 improvement-idea, 3 process-fix).",
+      "backlog": [
         {
-          "id": 1,
-          "title": "Cority Salesforce Community scrape (Source 2)",
+          "id": "kb-09",
+          "title": "data/kb.json has no branch protection, a single custodian, and no off-GitHub backup",
+          "area": "Knowledge Base",
+          "type": "process-fix",
+          "severity": "high",
+          "found_by": "Adam",
+          "found_date": "2026-08-21",
           "status": "open",
-          "owner": "Adam",
-          "note": "Second Cority H&S source (uc.cority.com); ClickHelp side fully built/indexed, this one still needs authenticated login flow, Coveo article enumeration, Salesforce image-placeholder safety check. Source: CORITY-FEASIBILITY.md §3-5."
+          "recommendation": "Needs Kevin's own decision or action -- this is a data-protection risk, not a build task.",
+          "source": "Adam sweep, 21 Aug 2026"
         },
         {
-          "id": 2,
-          "title": "SQL Training Guide (Oracle SQL Developer for HR Systems)",
-          "status": "open/parked",
-          "owner": "Kevin/Adam",
-          "note": "Full draft written June 2026, needs Word doc + screenshots + library commit."
-        },
-        {
-          "id": 3,
-          "title": "HOW TO: Add a Pay Code to HR Report Suite SQL",
-          "status": "open/parked",
-          "owner": "Kevin/Adam",
-          "note": "Draft exists, needs Word doc + screenshots + commit; linked to pay code 121 work."
-        },
-        {
-          "id": 4,
-          "title": "HOW TO: Raise an OSM Change Request for HR Reporting",
-          "status": "open/parked",
-          "owner": "Kevin/Adam",
-          "note": "Draft exists, needs Word doc + commit."
-        },
-        {
-          "id": 5,
-          "title": "Linda cross-session memory + self-learning",
-          "status": "blocked",
-          "owner": "Kevin (decision needed)",
-          "note": "Two distinct pieces of work, neither designed; needs scope decision before sizing."
-        },
-        {
-          "id": 6,
-          "title": "Access Group/PeopleXD articles missing screenshots",
-          "status": "open (tech debt)",
-          "owner": "Adam",
-          "note": "~1,948 web articles text-only, images never captured; fix steps already documented."
-        },
-        {
-          "id": 7,
-          "title": "Linda's live Cority Q&A not confirmed end-to-end",
+          "id": "kb-01",
+          "title": "Cority Salesforce Community scrape (Source 2, uc.cority.com) still needs an authenticated login flow, Coveo article enumeration, and an image-placeholder safety check",
+          "area": "Knowledge Base",
+          "type": "gap",
+          "severity": "medium",
+          "found_by": "Adam",
+          "found_date": "2026-08-21",
           "status": "open",
-          "owner": "Kevin (action needed)",
-          "note": "Mechanism verified by code read only; needs Kevin's own AI worker credentials for a real test."
+          "recommendation": "Scope and build the authenticated scrape path; ClickHelp side is already fully built/indexed.",
+          "source": "hr-fa-knowledge-base CORITY-FEASIBILITY.md §3-5"
         },
         {
-          "id": 8,
-          "title": "TTS read-aloud cuts off past 2,000 chars",
+          "id": "kb-05",
+          "title": "Linda cross-session memory + self-learning -- two distinct pieces of work, neither designed",
+          "area": "Knowledge Base",
+          "type": "improvement-idea",
+          "severity": "medium",
+          "found_by": "Adam",
+          "found_date": "2026-08-21",
           "status": "open",
-          "owner": "Adam",
-          "note": "Worker's /tts route truncates; client-side chunking fix scoped but not built."
+          "recommendation": "Needs Kevin's scope decision before sizing either piece.",
+          "source": "Adam sweep, 21 Aug 2026"
         },
         {
-          "id": 9,
-          "title": "Data protection gaps on data/kb.json",
-          "status": "blocked",
-          "owner": "Kevin (action needed)",
-          "note": "No branch protection on main, single custodian, no off-GitHub backup."
-        },
-        {
-          "id": 10,
-          "title": "pxd.lelitte.co.uk SERVICES section visual approval",
+          "id": "kb-07",
+          "title": "Linda's live Cority Q&A has only been verified by reading the code, not a real end-to-end test",
+          "area": "Knowledge Base",
+          "type": "gap",
+          "severity": "medium",
+          "found_by": "Adam",
+          "found_date": "2026-08-21",
           "status": "open",
-          "owner": "Kevin (action needed)",
-          "note": "Live sidebar change verified byte-for-byte, not yet visually reviewed by Kevin."
+          "recommendation": "Needs Kevin's own AI worker credentials for a real test.",
+          "source": "Adam sweep, 21 Aug 2026"
         },
         {
-          "id": 11,
-          "title": "Colleges & Halls Guide -- commit real Word doc",
+          "id": "kb-08",
+          "title": "TTS read-aloud on the knowledge base cuts off past roughly 2,000 characters",
+          "area": "Knowledge Base",
+          "type": "bug",
+          "severity": "medium",
+          "found_by": "Adam",
+          "found_date": "2026-08-21",
+          "status": "open",
+          "recommendation": "Client-side chunking fix already scoped, not yet built.",
+          "source": "Adam sweep, 21 Aug 2026"
+        },
+        {
+          "id": "kb-02",
+          "title": "SQL Training Guide (Oracle SQL Developer for HR Systems) drafted June 2026, needs Word doc + screenshots + library commit",
+          "area": "Knowledge Base",
+          "type": "gap",
+          "severity": "low",
+          "found_by": "Adam",
+          "found_date": "2026-08-21",
+          "status": "open",
+          "recommendation": "Needs Kevin's own screenshots before it can be committed as a real library file.",
+          "source": "Adam sweep, 21 Aug 2026"
+        },
+        {
+          "id": "kb-03",
+          "title": "HOW TO: Add a Pay Code to HR Report Suite SQL -- draft exists, needs Word doc + screenshots + commit",
+          "area": "Knowledge Base",
+          "type": "gap",
+          "severity": "low",
+          "found_by": "Adam",
+          "found_date": "2026-08-21",
+          "status": "open",
+          "recommendation": "Linked to the pay code 121 work; finish alongside it.",
+          "source": "Adam sweep, 21 Aug 2026"
+        },
+        {
+          "id": "kb-04",
+          "title": "HOW TO: Raise an OSM Change Request for HR Reporting -- draft exists, needs Word doc + commit",
+          "area": "Knowledge Base",
+          "type": "gap",
+          "severity": "low",
+          "found_by": "Adam",
+          "found_date": "2026-08-21",
+          "status": "open",
+          "recommendation": "Same treatment as kb-02/kb-03.",
+          "source": "Adam sweep, 21 Aug 2026"
+        },
+        {
+          "id": "kb-06",
+          "title": "~1,948 Access Group/PeopleXD web articles are text-only -- images were never captured",
+          "area": "Knowledge Base",
+          "type": "gap",
+          "severity": "low",
+          "found_by": "Adam",
+          "found_date": "2026-08-21",
+          "status": "open",
+          "recommendation": "Fix steps already documented, tech debt rather than a live blocker.",
+          "source": "Adam sweep, 21 Aug 2026"
+        },
+        {
+          "id": "kb-10",
+          "title": "pxd.lelitte.co.uk SERVICES section sidebar change verified byte-for-byte but not yet visually reviewed by Kevin",
+          "area": "Knowledge Base",
+          "type": "process-fix",
+          "severity": "low",
+          "found_by": "Adam",
+          "found_date": "2026-08-21",
+          "status": "open",
+          "recommendation": "Needs Kevin's visual approval, same UI-approval-gate discipline as command-centre.",
+          "source": "Adam sweep, 21 Aug 2026"
+        },
+        {
+          "id": "kb-11",
+          "title": "Colleges & Halls Guide still has a placeholder .md instead of Kevin's actual Word doc",
+          "area": "Knowledge Base",
+          "type": "gap",
+          "severity": "low",
+          "found_by": "Adam",
+          "found_date": "2026-08-21",
           "status": "in-progress",
-          "owner": "Adam",
-          "note": "Placeholder .md needs replacing with Kevin's actual .docx."
+          "recommendation": "Swap the placeholder for the real .docx once available.",
+          "source": "Adam sweep, 21 Aug 2026"
         },
         {
-          "id": 12,
-          "title": "Kevin's Guides cleanup",
+          "id": "kb-12",
+          "title": "Kevin's Guides section still has a broken JSON-blob pipeline that needs removing, superseded by the library-file approach",
+          "area": "Knowledge Base",
+          "type": "process-fix",
+          "severity": "low",
+          "found_by": "Adam",
+          "found_date": "2026-08-21",
           "status": "in-progress",
-          "owner": "Adam",
-          "note": "Remove broken JSON-blob pipeline, superseded by library-file approach."
+          "recommendation": "Clean up in progress.",
+          "source": "Adam sweep, 21 Aug 2026"
         }
       ],
-      "link": null
+      "link": "https://begb0037admin.github.io/hr-fa-knowledge-base/"
     },
     {
       "id": "hris",
-      "label": "HRIS (Tickets + Change Requests)",
+      "label": "HRIS",
       "status": "attention",
-      "source": "begb0037admin/hris-dashboard data/tickets.json + begb0037admin/hris-change-requests/CRs (live)",
-      "summary": "31 open SAASIT tickets (6 stale, oldest 183 days). 3 change request(s) still in Draft, none finalised.",
-      "counts": {
-        "tickets_total": 31,
-        "tickets_unassigned": 0,
-        "tickets_stale": 6,
-        "tickets_oldest_days": 183,
-        "change_requests_open": 3,
-        "change_requests_total": 3
-      },
-      "change_requests": [
+      "source": "Curated cross-agent backlog (data/backlog.json) -- not a live metrics mirror",
+      "summary": "3 open backlog item(s) (1 gap, 2 process-fix).",
+      "backlog": [
         {
-          "file": "CR-2026-06-15-colleges-halls-org-hierarchy-setup.md",
-          "title": "Colleges & Halls Org Hierarchy & Non-Payroll Company Set-Up (UOXU)",
-          "status": "Draft"
+          "id": "hris-01",
+          "title": "All 3 hris-change-requests are still Draft status -- none have ever progressed past drafting (oldest since 15 Jun 2026)",
+          "area": "HRIS",
+          "type": "process-fix",
+          "severity": "medium",
+          "found_by": "Drew",
+          "found_date": "2026-08-21",
+          "status": "open",
+          "recommendation": "Define a real CR lifecycle (Draft -> Approved -> In Progress -> Closed) and revisit each one's actual status against it.",
+          "source": "hris-change-requests/CRs, live-checked 21 Aug 2026"
         },
         {
-          "file": "CR-2026-06-18-pay-code-121-hr-report-suite.md",
-          "title": "Add Pay Code 121 (PAYPAY25) to HR Report Suite SQL",
-          "status": "Draft"
+          "id": "hris-02",
+          "title": "6 SAASIT tickets have gone stale with no escalation mechanism, oldest untouched 183 days",
+          "area": "HRIS",
+          "type": "gap",
+          "severity": "medium",
+          "found_by": "Drew",
+          "found_date": "2026-08-21",
+          "status": "open",
+          "recommendation": "A stale-ticket review/escalation step, similar to command-centre's staleness badge concept, doesn't exist for SAASIT tickets.",
+          "source": "hris-dashboard data/tickets.json, live-checked 21 Aug 2026"
         },
         {
-          "file": "CR-2026-08-20-recsup20-cority-applicant-change-control.md",
-          "title": "Retrospective Change Control for RECSUP20 Applicant Cority Interface File (Rebuild Ownership: Simon Burford)",
-          "status": "Draft"
+          "id": "hris-03",
+          "title": "The .bat that pulls import_osm_report.py from GitHub is commit-pinned (SCRIPT_SHA), but that pin can silently go stale -- nothing enforces bumping it when the script changes",
+          "area": "HRIS",
+          "type": "process-fix",
+          "severity": "medium",
+          "found_by": "Drew",
+          "found_date": "2026-08-20",
+          "status": "open",
+          "recommendation": "Add an automated check (e.g. a CI step or a pre-commit hook) that fails if import_osm_report.py changes without SCRIPT_SHA also being bumped in the same change, rather than relying on every future session remembering the rule.",
+          "source": "hris-dashboard RESUME.md, pinning shipped 20 Aug 2026"
         }
       ],
-      "tickets_updated_display": "Thursday 20 August 2026 at 13:59",
       "link": "https://begb0037admin.github.io/hris-dashboard/"
+    },
+    {
+      "id": "cross-cutting",
+      "label": "Cross-cutting",
+      "status": "ok",
+      "source": "Curated cross-agent backlog (data/backlog.json) -- not a live metrics mirror",
+      "summary": "All known backlog items resolved. 1 resolved.",
+      "backlog": [
+        {
+          "id": "cross-01",
+          "title": "A mid-build 'git reset --hard' while redirecting this dashboard's repo destroyed uncommitted working files (recovered from tool-call history, nothing lost, but shouldn't have happened)",
+          "area": "Cross-cutting",
+          "type": "process-fix",
+          "severity": "low",
+          "found_by": "Drew",
+          "found_date": "2026-08-21",
+          "status": "done",
+          "recommendation": "Prefer committing before repointing a remote, or using a fresh clone/worktree, rather than reusing a working tree with staged-but-uncommitted files across a remote redirect.",
+          "source": "This session, kevin-work-hub build, 21 Aug 2026"
+        }
+      ],
+      "link": null
     }
   ]
 }
