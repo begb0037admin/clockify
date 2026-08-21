@@ -529,6 +529,18 @@
       "status": "open",
       "recommendation": "Both repos' CLAUDE.md files have drifted from current live pipeline state during this stability sprint. Needs a refresh pass so a future session bootstrapping from CLAUDE.md doesn't reconstruct progress from stale prose instead of live state.",
       "source": "Drew observation, 21 Aug 2026 work-inbox/command-centre stability sprint review"
+    },
+    {
+      "id": "wi-10",
+      "title": "Absences panel showed incorrect concurrent \"off today, returns Monday 24 August\" for multiple people -- first-write-wins dedup bug in fetch_inbox.py's _add_absence()",
+      "area": "Work Inbox",
+      "type": "bug",
+      "severity": "medium",
+      "found_by": "Drew",
+      "found_date": "2026-08-21",
+      "status": "done",
+      "recommendation": "Fixed: merge logic now bridges two real absence entries into one continuous window only when the gap between them is entirely non-working (weekend) days -- otherwise treats them as genuinely separate absences and surfaces whichever covers today or is soonest upcoming. Two distinct root causes: (1) separate real absences (e.g. three individual A/L days on different weeks) were being force-merged into a fabricated continuous window; (2) a placeholder-organizer name-resolution bug (Python .title() mangling 'Ant'S' from subject-parsed text) split one person (Anthony Kong) into two different dedup keys -- now resolved via MAPI PR_SENDER_NAME through PropertyAccessor instead of subject-text parsing. Already merged and live-verified on both work-inbox and command-centre dashboards (both consume this same panel data); no further action needed, though a regression test covering multi-entry-per-person dedup windows would guard against recurrence.",
+      "source": "begb0037admin/work-inbox/fetch_inbox.py, merged to main at commit 2cd53528; investigated and confirmed against live Outlook COM data across multiple test passes, 21 Aug 2026; verified live on both work-inbox and command-centre dashboards post-fix via rendered-page checks"
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-21 18:30 UTC",
+  "generated_at": "2026-08-21 18:34 UTC",
   "model": "curated-backlog-v2",
   "pillars": [
     {
@@ -116,7 +116,7 @@
       "status": "attention",
       "open_count": 4,
       "source": "Curated cross-agent backlog (data/backlog.json) -- not a live metrics mirror",
-      "summary": "4 open backlog item(s) (2 bug, 2 gap). 5 resolved.",
+      "summary": "4 open backlog item(s) (2 bug, 2 gap). 6 resolved.",
       "backlog": [
         {
           "id": "wi-02",
@@ -213,6 +213,18 @@
           "status": "done",
           "recommendation": "fetch_inbox.py already fired a real desktop toast on failure as of 20 Aug (Phase 3.6). The remaining 2 stages, tools/publish_needs_reply.py and tools/publish_drafted_replies.py, now import a new shared tools/phase_failure_notify.py and fire the same toast. Verified live via the BurntToast registry counter (+1 per real failure, +0 on --dry-run) against the real production tools/ directory. Two related gaps found and fixed in the same pass: the local Run Inbox Briefing.bat had no download step for the new module (would have crashed the next scheduled run), and a pre-existing duplicate :notify_failure subroutine in the same .bat would have double-toasted -- both fixed.",
           "source": "work-inbox commits ab1f6bb4 (fetch_inbox.py, 20 Aug) and e847033f (tools/phase_failure_notify.py, 21 Aug), both on main; drew/memory/wi-phase2-silentfail-finish-ticksretry-correction-21aug.md"
+        },
+        {
+          "id": "wi-10",
+          "title": "Absences panel showed incorrect concurrent \"off today, returns Monday 24 August\" for multiple people -- first-write-wins dedup bug in fetch_inbox.py's _add_absence()",
+          "area": "Work Inbox",
+          "type": "bug",
+          "severity": "medium",
+          "found_by": "Drew",
+          "found_date": "2026-08-21",
+          "status": "done",
+          "recommendation": "Fixed: merge logic now bridges two real absence entries into one continuous window only when the gap between them is entirely non-working (weekend) days -- otherwise treats them as genuinely separate absences and surfaces whichever covers today or is soonest upcoming. Two distinct root causes: (1) separate real absences (e.g. three individual A/L days on different weeks) were being force-merged into a fabricated continuous window; (2) a placeholder-organizer name-resolution bug (Python .title() mangling 'Ant'S' from subject-parsed text) split one person (Anthony Kong) into two different dedup keys -- now resolved via MAPI PR_SENDER_NAME through PropertyAccessor instead of subject-text parsing. Already merged and live-verified on both work-inbox and command-centre dashboards (both consume this same panel data); no further action needed, though a regression test covering multi-entry-per-person dedup windows would guard against recurrence.",
+          "source": "begb0037admin/work-inbox/fetch_inbox.py, merged to main at commit 2cd53528; investigated and confirmed against live Outlook COM data across multiple test passes, 21 Aug 2026; verified live on both work-inbox and command-centre dashboards post-fix via rendered-page checks"
         },
         {
           "id": "wi-07",
