@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-21 20:41 UTC",
+  "generated_at": "2026-08-21 21:10 UTC",
   "model": "curated-backlog-v2",
   "pillars": [
     {
@@ -518,9 +518,9 @@
       "id": "cross-cutting",
       "label": "Cross-cutting",
       "status": "attention",
-      "open_count": 4,
+      "open_count": 6,
       "source": "Curated cross-agent backlog (data/backlog.json) -- not a live metrics mirror",
-      "summary": "4 open backlog item(s) (1 improvement-idea, 3 process-fix). 4 resolved.",
+      "summary": "6 open backlog item(s) (1 gap, 4 process-fix, 1 improvement-idea). 4 resolved.",
       "backlog": [
         {
           "id": "cross-02",
@@ -569,6 +569,30 @@
           "status": "open",
           "recommendation": "When elevation requires a human in the loop (or any time a complex quoted CLI string would otherwise be pasted into PowerShell), prefer writing a small .ps1 script file using native cmdlets (e.g. New-ScheduledTaskAction/Set-ScheduledTask instead of schtasks /Change /TR \"...\") -- worked first try with no quoting risk, versus two failed attempts (backslash-escaping, then single-quote wrapping) with the raw CLI string. Same failure class independently observed tonight by the coordinator/Codex: deeply nested PowerShell quoting in scripted -Command strings is a recurring fragility across agents, not a one-off.",
           "source": "begb0037admin/max memory/macrium-retention-live-cutover-2026-08-21.md, live Macrium Task Scheduler cutover, 21 Aug 2026"
+        },
+        {
+          "id": "cross-09",
+          "title": "Macrium Reflect's own official KB/documentation blocks automated fetches (403), so agents can't reliably look up CLI/API syntax from vendor docs and must fall back to a specialist tool (Codex) or a human browsing session",
+          "area": "Cross-cutting",
+          "type": "gap",
+          "severity": "low",
+          "found_by": "Max / Codex",
+          "found_date": "2026-08-21",
+          "status": "open",
+          "recommendation": "When a task needs vendor CLI/API documentation and the vendor's KB pages 403 automated fetches, don't keep retrying the same fetch -- escalate to a specialist review tool (Codex) or ask a human to check the page directly, rather than guessing at undocumented flags against production.",
+          "source": "begb0037admin/max memory (Macrium retention fix, live Codex dispatch, 21 Aug 2026)"
+        },
+        {
+          "id": "cross-10",
+          "title": "A hand-edited XML backup-definition file wasn't validated immediately after editing, leaving an invalid-comment syntax bug (stray '--' inside XML comments) undetected until much later in the process",
+          "area": "Cross-cutting",
+          "type": "process-fix",
+          "severity": "low",
+          "found_by": "Max / Codex",
+          "found_date": "2026-08-21",
+          "status": "open",
+          "recommendation": "Always run the owning tool's own validator (e.g. Reflect.exe -v) immediately after any manual edit to a config/definition file, before relying on it or building further steps on top of it, rather than assuming a hand-edit is correct.",
+          "source": "begb0037admin/max memory (WeeklyFull_Definition.xml XML repair, 21 Aug 2026)"
         },
         {
           "id": "cross-04",
