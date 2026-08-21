@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-21 18:34 UTC",
+  "generated_at": "2026-08-21 20:41 UTC",
   "model": "curated-backlog-v2",
   "pillars": [
     {
@@ -518,9 +518,9 @@
       "id": "cross-cutting",
       "label": "Cross-cutting",
       "status": "attention",
-      "open_count": 3,
+      "open_count": 4,
       "source": "Curated cross-agent backlog (data/backlog.json) -- not a live metrics mirror",
-      "summary": "3 open backlog item(s) (3 process-fix). 4 resolved.",
+      "summary": "4 open backlog item(s) (1 improvement-idea, 3 process-fix). 4 resolved.",
       "backlog": [
         {
           "id": "cross-02",
@@ -557,6 +557,18 @@
           "status": "open",
           "recommendation": "Both repos' CLAUDE.md files have drifted from current live pipeline state during this stability sprint. Needs a refresh pass so a future session bootstrapping from CLAUDE.md doesn't reconstruct progress from stale prose instead of live state.",
           "source": "Drew observation, 21 Aug 2026 work-inbox/command-centre stability sprint review"
+        },
+        {
+          "id": "cross-08",
+          "title": "schtasks/PowerShell CLI strings with embedded double-quoted sub-paths are fragile via copy-paste into a live terminal -- quoting corrupted twice before switching to a .ps1 script file",
+          "area": "Cross-cutting",
+          "type": "improvement-idea",
+          "severity": "low",
+          "found_by": "Max",
+          "found_date": "2026-08-21",
+          "status": "open",
+          "recommendation": "When elevation requires a human in the loop (or any time a complex quoted CLI string would otherwise be pasted into PowerShell), prefer writing a small .ps1 script file using native cmdlets (e.g. New-ScheduledTaskAction/Set-ScheduledTask instead of schtasks /Change /TR \"...\") -- worked first try with no quoting risk, versus two failed attempts (backslash-escaping, then single-quote wrapping) with the raw CLI string. Same failure class independently observed tonight by the coordinator/Codex: deeply nested PowerShell quoting in scripted -Command strings is a recurring fragility across agents, not a one-off.",
+          "source": "begb0037admin/max memory/macrium-retention-live-cutover-2026-08-21.md, live Macrium Task Scheduler cutover, 21 Aug 2026"
         },
         {
           "id": "cross-04",
