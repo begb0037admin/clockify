@@ -9,6 +9,7 @@
 - **Live dashboard:** https://hub.lelitte.co.uk/ (primary, custom domain added 21 Aug 2026 — CNAME file + GitHub Pages custom-domain setting configured; DNS record in Cloudflare not yet added, see HANDOVER.md for status) — https://begb0037admin.github.io/kevin-work-hub/ remains live as fallback.
 
 ## Bootstrap order
+0. **Engineering owner: Drew** (`agent-commons/AGENT_DIRECTORY.md`) — dispatch to Drew for infrastructure/engineering work on this repo (build script, backlog schema, roadmap generation). Content is cross-agent — see the directory for which agent owns a given finding's domain.
 1. This file
 2. `HANDOVER.md` — current state, what's pending, next action
 3. `ROADMAP.md` — outstanding items / future iterations
